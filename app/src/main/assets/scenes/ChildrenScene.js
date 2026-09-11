@@ -11,10 +11,12 @@ export default class ChildrenScene extends Phaser.Scene {
         // UI references
         this.versionUI = {};
         this.callUI = {};
+        this.colorUI = {};
 
         // Layout information
         this.versionPos = {};
         this.callPos = {};
+        this.colorPos = {};
 
         // Actual selections
         this.selection = {
@@ -24,9 +26,15 @@ export default class ChildrenScene extends Phaser.Scene {
     }
 
     create() {
+const test = data.childrenVersesData();
+test.forEach(item => {
+    //jp(item.color);
+});
+
 
         this.selection = {
             version: null,
+            color: null,
             call: null
         };
 
@@ -177,7 +185,7 @@ export default class ChildrenScene extends Phaser.Scene {
                 'pointerdown',
                 () => {
                     this.setVersion(item.id);
-                    this.practiceTypeUI();
+                    this.selectColorUI();
                 }
             );
 
@@ -240,6 +248,89 @@ export default class ChildrenScene extends Phaser.Scene {
         return this.selection.version ?? null;
     }
 
+    // ==================================================
+    // COLOR
+    // ==================================================
+
+    selectColorUI() {
+        let currentY =
+            this.currentY +
+            20;
+
+        addText(
+            this,
+            20,
+            currentY,
+            'Color:',
+            {
+                fontSize: '36px',
+                color: '#ffffff'
+            }
+        )
+        .setOrigin(0);
+    
+        currentY += 40;
+        
+        const buttonW =
+            this.width / 3 - 60;
+
+        const buttonH = 60;
+        const gap = 20;
+
+        this.colorPos = {
+            x: 20,
+            y: currentY,
+            w: buttonW,
+            h: buttonH,
+            gap: gap
+        };
+        
+        let currentX = 20;
+        const buttonY = currentY + 20;
+        
+        data.colors().forEach(item => {
+            const bg =
+                this.add.rectangle(
+                    currentX,
+                    buttonY,
+                    buttonW,
+                    buttonH,
+                    0x555555
+                )
+                .setOrigin(0)
+                .setInteractive();
+
+            const text =
+                addText(
+                    this,
+                    currentX + buttonW / 2,
+                    buttonY + buttonH / 2,
+                    item.text,
+                    {
+                        fontSize: '24px',
+                        color: '#ffffff'
+                    }
+                )
+                .setOrigin(0.5);
+
+            this.colorUI[item.id] = {
+                bg: bg,
+                text: text,
+                data: item
+            };
+
+            bg.on(
+                'pointerdown',
+                () => {
+                    this.practiceTypeUI();
+                }
+            );
+            
+             currentX += buttonW + 20;
+        });
+        
+        this.currentY = currentY + buttonH + 20;
+    }
 
     // ==================================================
     // PRACTICE TYPE
