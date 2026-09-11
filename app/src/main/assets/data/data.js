@@ -125,7 +125,7 @@ export function getBooks(section) {
 
 export function colors() {
     return [
-        { id: 'red', text: 'Blue' },
+        { id: 'red', text: 'Red' },
         { id: "green", text: 'Green' },
         { id: 'blue', text: 'Blue' }
     ];

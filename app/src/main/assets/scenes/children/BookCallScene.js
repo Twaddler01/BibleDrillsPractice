@@ -1,7 +1,6 @@
 // ./scenes/children/BookCallScene.js
-
 import * as data from '../../data/data.js';
-import StartOverDialog from '../../ui/StartOverDialog.js';
+import DialogWarn from '../../ui/DialogWarn.js';
 
 export default class BookCallScene extends Phaser.Scene {
 
@@ -9,6 +8,7 @@ export default class BookCallScene extends Phaser.Scene {
         super('BookCallScene');
 
         this.startOverDialog = null;
+        this.resetDialog = null;
 
         // ==================================================
         // DRILL STATE
@@ -60,7 +60,7 @@ export default class BookCallScene extends Phaser.Scene {
         )
         .setOrigin(0);
 
-        this.createHeader();
+        this.createHeaderFooter();
         this.startBookCall();
     }
 
@@ -68,7 +68,7 @@ export default class BookCallScene extends Phaser.Scene {
     // HEADER
     // ==================================================
 
-    createHeader() {
+    createHeaderFooter() {
 
         const catTitle = addText(
             this,
@@ -126,33 +126,18 @@ export default class BookCallScene extends Phaser.Scene {
             selectionTitle.y +
             selectionTitle.height +
             40;
-
+        
         const buttonWidth = 260;
         const buttonHeight = 60;
-        const buttonGap = 20;
-
-        const totalWidth =
-            buttonWidth * 2 +
-            buttonGap;
-
-        const leftX =
-            this.width / 2 -
-            totalWidth / 2 +
-            buttonWidth / 2;
-
-        const rightX =
-            leftX +
-            buttonWidth +
-            buttonGap;
 
         // --------------------------------------------------
-        // START OVER
+        // START OVER (bottom)
         // --------------------------------------------------
 
         this.startOverButton =
             this.add.rectangle(
-                leftX,
-                buttonY,
+                this.width / 2,
+                this.height - buttonHeight - 40,
                 buttonWidth,
                 buttonHeight,
                 0x555555
@@ -186,7 +171,7 @@ export default class BookCallScene extends Phaser.Scene {
 
         this.resetDrillButton =
             this.add.rectangle(
-                rightX,
+                this.width / 2,
                 buttonY,
                 buttonWidth,
                 buttonHeight,
@@ -211,7 +196,7 @@ export default class BookCallScene extends Phaser.Scene {
         this.resetDrillButton.on(
             'pointerdown',
             () => {
-                this.resetDrill();
+                this.resetDrillDialog();
             }
         );
     }
@@ -692,8 +677,35 @@ export default class BookCallScene extends Phaser.Scene {
     // RESET DRILL
     // ==================================================
 
-    resetDrill() {
+    resetDrillDialog() {
+        if (this.resetDialog) {
+            return;
+        }
 
+        this.resetDrillButton.disableInteractive();
+
+        this.resetDialog =
+            new DialogWarn(
+                this,
+                {
+                    onWarn:
+                        'Are you sure you want to reset the current drill?',
+                    onConfirm: () => {
+                        this.resetDrill();
+                    },
+                    onCancel: () => {
+                        this.cancelResetDrill();
+                    }
+                }
+            );
+    }
+
+    resetDrill() {
+        if (this.resetDialog) {
+            this.resetDialog.destroy();
+            this.resetDialog = null;
+        }
+        
         this.books =
             [...data.getBooks()];
 
@@ -702,10 +714,16 @@ export default class BookCallScene extends Phaser.Scene {
         );
 
         this.currentIndex = 0;
-
         this.showAnswer = false;
 
         this.updateDrillUI();
+        this.resetDrillButton.setInteractive();
+    }
+
+    cancelResetDrill() {
+        this.resetDialog.destroy();
+        this.resetDialog = null;
+        this.resetDrillButton.setInteractive();
     }
 
     // ==================================================
@@ -713,7 +731,6 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     startOver() {
-
         if (this.startOverDialog) {
             return;
         }
@@ -721,10 +738,9 @@ export default class BookCallScene extends Phaser.Scene {
         this.startOverButton.disableInteractive();
 
         this.startOverDialog =
-            new StartOverDialog(
+            new DialogWarn(
                 this,
                 {
-
                     onConfirm: () => {
                         this.confirmStartOver();
                     },
@@ -732,7 +748,6 @@ export default class BookCallScene extends Phaser.Scene {
                     onCancel: () => {
                         this.cancelStartOver();
                     }
-
                 }
             );
     }

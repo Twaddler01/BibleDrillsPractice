@@ -1,4 +1,4 @@
-export default class StartOverDialog {
+export default class DialogWarn {
 
     constructor(scene, options = {}) {
 
@@ -13,6 +13,9 @@ export default class StartOverDialog {
             scene.scale.height;
 
         this.elements = [];
+
+        this.onWarn = options.onWarn ?? 
+            'Are you sure you want to start over?\n\nCurrent drill progress will be reset.';
 
         this.onConfirm =
             options.onConfirm ?? (() => {});
@@ -29,15 +32,92 @@ export default class StartOverDialog {
     // ==================================================
 
     create() {
-
+    
         const boxW = this.width - 80;
-        const boxH = 260;
-
         const boxX = this.width / 2;
         const boxY = this.height / 2;
-
-
-        // Background
+    
+        const padding = 30;
+        const messageWidth = boxW - padding * 2;
+    
+        const buttonH = 60;
+        const buttonGap = 35;
+    
+        // ==================================================
+        // MESSAGE
+        // ==================================================
+    
+        const message = this.addElement(
+            addText(
+                this.scene,
+                boxX,
+                0,
+                this.onWarn,
+                {
+                    fontSize: '32px',
+                    color: '#ffffff',
+                    align: 'center',
+                    wordWrap: {
+                        width: messageWidth
+                    }
+                }
+            )
+            .setOrigin(0.5)
+            .setDepth(101)
+        );
+    
+    
+        // ==================================================
+        // MEASURE MESSAGE
+        // ==================================================
+    
+        const messageH = message.displayHeight;
+    
+    
+        // ==================================================
+        // CALCULATE BOX
+        // ==================================================
+    
+        const topPadding = 30;
+        const bottomPadding = 30;
+    
+        const boxH =
+            topPadding +
+            messageH +
+            buttonGap +
+            buttonH +
+            bottomPadding;
+    
+    
+        const topY = boxY - boxH / 2;
+    
+        const messageY =
+            topY +
+            topPadding +
+            messageH / 2;
+    
+        const buttonY =
+            topY +
+            topPadding +
+            messageH +
+            buttonGap +
+            buttonH / 2;
+    
+    
+        // ==================================================
+        // POSITION MESSAGE
+        // ==================================================
+    
+        message.setPosition(
+            boxX,
+            messageY
+        );
+    
+    
+        // ==================================================
+        // BACKGROUND
+        // ==================================================
+    
         this.addElement(
             this.scene.add.rectangle(
                 boxX,
@@ -49,43 +129,25 @@ export default class StartOverDialog {
             .setOrigin(0.5)
             .setDepth(100)
         );
-
-
-        // Message
-        this.addElement(
-            addText(
-                this.scene,
-                boxX,
-                boxY - 70,
-                'Are you sure you want to start over?\n\nCurrent drill progress will be reset.',
-                {
-                    fontSize: '32px',
-                    color: '#ffffff',
-                    align: 'center',
-                    wordWrap: {
-                        width: boxW - 40
-                    }
-                }
-            )
-            .setOrigin(0.5)
-            .setDepth(101)
-        );
-
-
+    
+    
+        // ==================================================
         // YES
+        // ==================================================
+    
         const yesButton = this.addElement(
             this.scene.add.rectangle(
                 boxX - 100,
-                boxY + 80,
+                buttonY,
                 160,
-                60,
+                buttonH,
                 0x008000
             )
             .setOrigin(0.5)
             .setInteractive()
             .setDepth(101)
         );
-
+    
         this.addElement(
             addText(
                 this.scene,
@@ -100,22 +162,25 @@ export default class StartOverDialog {
             .setOrigin(0.5)
             .setDepth(102)
         );
-
-
+    
+    
+        // ==================================================
         // CANCEL
+        // ==================================================
+    
         const cancelButton = this.addElement(
             this.scene.add.rectangle(
                 boxX + 100,
-                boxY + 80,
+                buttonY,
                 160,
-                60,
+                buttonH,
                 0x555555
             )
             .setOrigin(0.5)
             .setInteractive()
             .setDepth(101)
         );
-
+    
         this.addElement(
             addText(
                 this.scene,
@@ -130,19 +195,19 @@ export default class StartOverDialog {
             .setOrigin(0.5)
             .setDepth(102)
         );
-
-
+    
+    
         // ==================================================
         // EVENTS
         // ==================================================
-
+    
         yesButton.on(
             'pointerdown',
             () => {
                 this.onConfirm();
             }
         );
-
+    
         cancelButton.on(
             'pointerdown',
             () => {
@@ -150,7 +215,6 @@ export default class StartOverDialog {
             }
         );
     }
-
 
     // ==================================================
     // ELEMENTS

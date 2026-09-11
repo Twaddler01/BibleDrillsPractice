@@ -10,13 +10,8 @@ export default class ChildrenScene extends Phaser.Scene {
 
         // UI references
         this.versionUI = {};
-        this.callUI = {};
         this.colorUI = {};
-
-        // Layout information
-        this.versionPos = {};
-        this.callPos = {};
-        this.colorPos = {};
+        this.callUI = {};
 
         // Actual selections
         this.selection = {
@@ -52,6 +47,10 @@ test.forEach(item => {
         .setOrigin(0);
 
         this.createHeader();
+        this.selectVersionUI();
+        this.selectColorUI();
+        this.practiceTypeUI();
+        this.createGoButton();
     }
 
     createHeader() {
@@ -78,38 +77,9 @@ test.forEach(item => {
             }
         )
         .setOrigin(0.5, 0);
-
-        // Start Over
-        this.startOverButton = this.add.rectangle(
-            this.width / 2,
-            20 + catTitle.height + 20 + gameTitle.height + 40,
-            300,
-            60,
-            0x555555
-        )
-        .setOrigin(0.5, 0)
-        .setInteractive();
-
-        addText(
-            this,
-            this.startOverButton.x,
-            this.startOverButton.y + this.startOverButton.height / 2,
-            'START OVER',
-            {
-                fontSize: '36px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5);
-
-        this.startOverButton.on(
-            'pointerdown',
-            () => {
-                this.startOver();
-            }
-        );
         
-        this.selectVersionUI();
+        this.currentY = gameTitle.y + gameTitle.height + 40;
+
     }
 
     // ==================================================
@@ -122,7 +92,7 @@ test.forEach(item => {
             addText(
                 this,
                 20,
-                this.startOverButton.y + 200,
+                this.currentY,
                 'Translation:',
                 {
                     fontSize: '36px',
@@ -139,15 +109,7 @@ test.forEach(item => {
         const buttonW = 160;
         const buttonH = 60;
         const gap = 20;
-
-        this.versionPos = {
-            x: 20,
-            y: buttonY,
-            w: buttonW,
-            h: buttonH
-        };
-
-        let buttonX = this.versionPos.x;
+        let buttonX = 20;
 
         data.versionData().forEach(item => {
 
@@ -185,7 +147,6 @@ test.forEach(item => {
                 'pointerdown',
                 () => {
                     this.setVersion(item.id);
-                    this.selectColorUI();
                 }
             );
 
@@ -199,50 +160,27 @@ test.forEach(item => {
 
 
     setVersion(id) {
-
         this.selection.version = id;
-
-        const selected = this.versionUI[id];
-
+    
         Object.entries(this.versionUI).forEach(
             ([versionId, ui]) => {
-
-                // Keep selected
-                if (versionId === id) {
-
-                    ui.bg.setPosition(
-                        this.versionPos.x,
-                        this.versionPos.y
-                    );
-
+    
+                const selected =
+                    versionId === id;
+    
+                if (selected) {
                     ui.bg.setFillStyle(0x008000);
-
-                    ui.bg.disableInteractive();
-
-                    ui.text.setText(
-                        `✓ ${ui.data.text}`
-                    );
-
-                    ui.text.setPosition(
-                        this.versionPos.x +
-                        this.versionPos.w / 2,
-
-                        this.versionPos.y +
-                        this.versionPos.h / 2
-                    );
-
-                    return;
+                    ui.text.setText(`✓ ${ui.data.text}`);
                 }
-
-                // Remove other versions
-                ui.bg.destroy();
-                ui.text.destroy();
-
-                delete this.versionUI[versionId];
+                else {
+                    ui.bg.setFillStyle(0x555555);
+                    ui.text.setText(ui.data.text);
+                }
             }
         );
+    
+        this.updateGoButton();
     }
-
 
     getVersion() {
         return this.selection.version ?? null;
@@ -257,19 +195,19 @@ test.forEach(item => {
             this.currentY +
             20;
 
-        addText(
-            this,
-            20,
-            currentY,
-            'Color:',
-            {
-                fontSize: '36px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0);
+        const colorTitle = 
+            addText(this,
+                20,
+                currentY,
+                'Color:',
+                {
+                    fontSize: '36px',
+                    color: '#ffffff'
+                }
+            )
+            .setOrigin(0);
     
-        currentY += 40;
+        currentY += 40 + 20;
         
         const buttonW =
             this.width / 3 - 60;
@@ -277,16 +215,8 @@ test.forEach(item => {
         const buttonH = 60;
         const gap = 20;
 
-        this.colorPos = {
-            x: 20,
-            y: currentY,
-            w: buttonW,
-            h: buttonH,
-            gap: gap
-        };
-        
         let currentX = 20;
-        const buttonY = currentY + 20;
+        const buttonY = currentY;
         
         data.colors().forEach(item => {
             const bg =
@@ -322,7 +252,7 @@ test.forEach(item => {
             bg.on(
                 'pointerdown',
                 () => {
-                    this.practiceTypeUI();
+                    this.setColor(item.id);
                 }
             );
             
@@ -332,16 +262,36 @@ test.forEach(item => {
         this.currentY = currentY + buttonH + 20;
     }
 
+    setColor(id) {
+        this.selection.color = id;
+    
+        Object.entries(this.colorUI).forEach(
+            ([colorId, ui]) => {
+    
+                const selected =
+                    colorId === id;
+    
+                if (selected) {
+                    ui.bg.setFillStyle(0x008000);
+                    ui.text.setText(`✓ ${ui.data.text}`);
+                }
+                else {
+                    ui.bg.setFillStyle(0x555555);
+                    ui.text.setText(ui.data.text);
+                }
+            }
+        );
+    
+        this.updateGoButton();
+    }
+
     // ==================================================
     // PRACTICE TYPE
     // ==================================================
 
     practiceTypeUI() {
-
-        let currentY =
-            this.currentY +
-            20;
-
+        let currentY = this.currentY;
+    
         addText(
             this,
             20,
@@ -353,36 +303,31 @@ test.forEach(item => {
             }
         )
         .setOrigin(0);
-
+    
         currentY += 40 + 20;
-
+    
         const buttonW =
             this.width / 2 - 40;
-
+    
         const buttonH = 60;
         const gap = 20;
-
-        this.callPos = {
-            x: 20,
-            y: currentY,
-            w: buttonW,
-            h: buttonH
-        };
-
-        data.callData().forEach(
+    
+        const callData = data.callData();
+    
+        callData.forEach(
             (item, index) => {
-
+    
                 const col = index % 2;
                 const row = Math.floor(index / 2);
-
+    
                 const x =
                     20 +
                     col * (buttonW + gap);
-
+    
                 const y =
                     currentY +
                     row * (buttonH + gap);
-
+    
                 const bg =
                     this.add.rectangle(
                         x,
@@ -393,7 +338,7 @@ test.forEach(item => {
                     )
                     .setOrigin(0)
                     .setInteractive();
-
+    
                 const text =
                     addText(
                         this,
@@ -406,13 +351,13 @@ test.forEach(item => {
                         }
                     )
                     .setOrigin(0.5);
-
+    
                 this.callUI[item.id] = {
-                    bg: bg,
-                    text: text,
+                    bg,
+                    text,
                     data: item
                 };
-
+    
                 bg.on(
                     'pointerdown',
                     () => {
@@ -421,83 +366,56 @@ test.forEach(item => {
                 );
             }
         );
-
+    
+        // Bottom of the practice-type buttons
         this.currentY =
             currentY +
-            Math.ceil(
-                data.callData().length / 2
-            ) * (buttonH + gap);
+            Math.ceil(callData.length / 2) *
+            (buttonH + gap);
     }
-
 
     setCall(id) {
-
         this.selection.call = id;
-
+    
         Object.entries(this.callUI).forEach(
             ([callId, ui]) => {
-
-                // Keep selected
-                if (callId === id) {
-
-                    ui.bg.setPosition(
-                        this.callPos.x,
-                        this.callPos.y
-                    );
-
+    
+                const selected =
+                    callId === id;
+    
+                if (selected) {
                     ui.bg.setFillStyle(0x008000);
-
-                    ui.bg.disableInteractive();
-
-                    ui.text.setText(
-                        `✓ ${ui.data.text}`
-                    );
-
-                    ui.text.setPosition(
-                        this.callPos.x +
-                        this.callPos.w / 2,
-
-                        this.callPos.y +
-                        this.callPos.h / 2
-                    );
-
-                    return;
+                    ui.text.setText(`✓ ${ui.data.text}`);
                 }
-
-                // Remove other choices
-                ui.bg.destroy();
-                ui.text.destroy();
-
-                delete this.callUI[callId];
+                else {
+                    ui.bg.setFillStyle(0x555555);
+                    ui.text.setText(ui.data.text);
+                }
             }
         );
-
-        this.showGoButton();
+    
+        this.updateGoButton();
     }
 
-    showGoButton() {
+    createGoButton() {
         const x = 20;
-    
-        const y =
-            this.callPos.y +
-            this.callPos.h +
-            40;
-    
-        const goButton =
+        const y = this.currentY + 40;
+
+        this.goButton =
             this.add.rectangle(
                 x,
                 y,
                 150,
                 70,
-                0x555555
+                0x008000
             )
             .setOrigin(0)
             .setInteractive();
     
-        addText(
+        this.goButtonText = addText(
             this,
-            x + goButton.width / 2,
-            y + goButton.height / 2,
+            x + this.goButton.width / 2,
+            y + this.goButton.height / 2,
             'GO',
             {
                 fontSize: '40px',
@@ -506,13 +424,34 @@ test.forEach(item => {
         )
         .setOrigin(0.5);
     
-        goButton.on(
+        this.goButton.on(
             'pointerdown',
             () => {
-                // Start drills
+                if (!this.isSelectionComplete()) {
+                    return;
+                }
+    
                 this.startDrill();
             }
         );
+    
+        this.updateGoButton();
+    }
+
+    isSelectionComplete() {
+        return Object.values(this.selection)
+            .every(value => value !== null);
+    }
+
+    updateGoButton() {
+        if (this.isSelectionComplete()) {
+            this.goButton.setVisible(true);
+            this.goButtonText.setVisible(true);
+        }
+        else {
+            this.goButton.setVisible(false);
+            this.goButtonText.setVisible(false);
+        }
     }
 
     startDrill() {
