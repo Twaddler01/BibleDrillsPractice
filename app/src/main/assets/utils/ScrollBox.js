@@ -1,0 +1,364 @@
+export default class ScrollBox {
+
+    constructor(scene, options = {}) {
+
+        this.scene = scene;
+
+        this.x = options.x ?? 0;
+        this.y = options.y ?? 0;
+
+        this.width =
+            options.width ?? 300;
+
+        this.height =
+            options.height ?? 200;
+
+        this.depth =
+            options.depth ?? 0;
+
+        this.maskPadding =
+            options.maskPadding ?? 2;
+
+        this.dragThreshold =
+            options.dragThreshold ?? 10;
+
+        this.onDragStart =
+            options.onDragStart ?? null;
+        
+        this.onDragEnd =
+            options.onDragEnd ?? null;
+        
+        this.dragPointerId = null;
+        this.didDrag = false;
+
+        this.scrollY = 0;
+        this.maxScrollY = 0;
+
+        this.create();
+    }
+
+    create() {
+
+        // ---------------------------------------------
+        // Content container
+        // ---------------------------------------------
+
+        this.content =
+            this.scene.add.container();
+
+        this.content.setDepth(
+            this.depth + 1
+        );
+
+        // ---------------------------------------------
+        // Mask
+        // ---------------------------------------------
+
+        this.maskShape =
+            this.scene.make.graphics({
+                add: false
+            });
+
+        this.maskShape.fillStyle(0xffffff);
+
+        this.maskShape.fillRect(
+            this.x,
+            this.y + this.maskPadding,
+            this.width,
+            this.height -
+                this.maskPadding * 2
+        );
+
+        this.mask =
+            this.maskShape.createGeometryMask();
+
+        this.maskShape.setPosition(
+            0,
+            0
+        );
+
+        this.content.setMask(
+            this.mask
+        );
+
+        // ---------------------------------------------
+        // Scroll zone
+        // ---------------------------------------------
+
+        this.scrollZone =
+            this.scene.add.zone(
+                this.x,
+                this.y,
+                this.width,
+                this.height
+            )
+            .setOrigin(0)
+            .setInteractive();
+
+        // ---------------------------------------------
+        // Mouse wheel
+        // ---------------------------------------------
+
+        this.scrollZone.on(
+            'wheel',
+            (pointer, over, dx, dy) => {
+
+                this.scrollBy(-dy);
+            }
+        );
+
+        // ---------------------------------------------
+        // Touch scrolling
+        // ---------------------------------------------
+
+        this.scene.input.on(
+            'pointerdown',
+            this.handlePointerDown,
+            this
+        );
+        
+        this.scene.input.on(
+            'pointermove',
+            this.handlePointerMove,
+            this
+        );
+        
+        this.scene.input.on(
+            'pointerup',
+            this.handlePointerUp,
+            this
+        );
+    }
+
+    handlePointerDown(pointer) {
+        if (!this.isPointerInside(pointer)) {
+            return;
+        }
+    
+        this.isDragging = false;
+        this.didDrag = false;
+    
+        this.dragPointerId =
+            pointer.id;
+    
+        this.dragStartY =
+            pointer.y;
+    
+        this.scrollStartY =
+            this.scrollY;
+    }
+    
+    handlePointerMove(pointer) {
+    
+        if (
+            this.dragPointerId !==
+            pointer.id
+        ) {
+            return;
+        }
+    
+        const deltaY =
+            pointer.y -
+            this.dragStartY;
+    
+        if (!this.isDragging) {
+    
+            if (
+                Math.abs(deltaY) <
+                this.dragThreshold
+            ) {
+                return;
+            }
+    
+            this.isDragging = true;
+            this.didDrag = true;
+    
+            this.onDragStart?.();
+        }
+    
+        this.setScroll(
+            this.scrollStartY -
+            deltaY
+        );
+    }
+    
+    handlePointerUp(pointer) {
+    
+        if (
+            this.dragPointerId !==
+            pointer.id
+        ) {
+            return;
+        }
+    
+        if (this.isDragging) {
+            this.onDragEnd?.();
+        }
+    
+        this.isDragging = false;
+        this.dragPointerId = null;
+    }
+    
+    wasDragged() {
+        return this.didDrag;
+    }
+
+    // To disable interactions outside of scroll area
+    isPointerInside(pointer) {
+        return (
+            pointer.x >= this.x &&
+            pointer.x <= this.x + this.width &&
+            pointer.y >= this.y &&
+            pointer.y <= this.y + this.height
+        );
+    }
+
+    // ---------------------------------------------
+    // Set scroll position
+    // ---------------------------------------------
+
+    setScroll(value) {
+
+        this.scrollY =
+            Phaser.Math.Clamp(
+                value,
+                0,
+                this.maxScrollY
+            );
+
+        this.updatePosition();
+    }
+
+    // ---------------------------------------------
+    // Move scroll position
+    // ---------------------------------------------
+
+    scrollBy(amount) {
+        this.setScroll(
+            this.scrollY + amount
+        );
+    }
+
+    // ---------------------------------------------
+    // Set content height
+    // ---------------------------------------------
+
+setContentHeight(height) {
+
+    this.contentHeight = height;
+
+    this.updateScrollLimits();
+}
+
+/*
+    setContentHeight(height) {
+
+        this.contentHeight =
+            height;
+
+        this.maxScrollY =
+            Math.max(
+                0,
+                height - this.height
+            );
+
+        // Make sure current position
+        // is still valid.
+        this.scrollY =
+            Phaser.Math.Clamp(
+                this.scrollY,
+                0,
+                this.maxScrollY
+            );
+
+        this.updatePosition();
+    }
+*/
+    // ---------------------------------------------
+    // Update content position
+    // ---------------------------------------------
+
+    updatePosition() {
+
+        this.content.y =
+            this.y -
+            this.scrollY;
+    }
+
+    // ---------------------------------------------
+    // Reset to top
+    // ---------------------------------------------
+
+    scrollToTop() {
+        this.setScroll(0);
+    }
+
+    // ---------------------------------------------
+    // Reset to bottom
+    // ---------------------------------------------
+
+    scrollToBottom() {
+        this.setScroll(
+            this.maxScrollY
+        );
+    }
+
+    // For StageViewport
+    setBounds(y, height) {
+    
+        this.y = y;
+        this.height = height;
+    
+        // Scroll zone follows viewport
+        this.scrollZone
+            ?.setPosition(this.x, this.y)
+            .setSize(this.width, this.height);
+    
+        // Rebuild mask in WORLD coordinates
+        this.maskShape.clear();
+        this.maskShape.fillStyle(0xffffff);
+    
+        this.maskShape.fillRect(
+            this.x,
+            this.y + this.maskPadding,
+            this.width,
+            this.height -
+                this.maskPadding * 2
+        );
+    
+        this.updateScrollLimits();
+    }
+
+    updateScrollLimits() {
+        this.maxScrollY =
+            Math.max(
+                0,
+                this.contentHeight - this.height
+            );
+    
+        this.scrollY =
+            Phaser.Math.Clamp(
+                this.scrollY,
+                0,
+                this.maxScrollY
+            );
+    
+        this.updatePosition();
+    }
+
+    // ---------------------------------------------
+    // Destroy
+    // ---------------------------------------------
+
+    destroy() {
+
+        this.scrollZone?.destroy();
+        this.content?.destroy();
+
+        this.mask?.destroy();
+
+        this.content = null;
+        this.scrollZone = null;
+        this.mask = null;
+    }
+}
