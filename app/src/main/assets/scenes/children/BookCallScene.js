@@ -38,7 +38,6 @@ export default class BookCallScene extends Phaser.Scene {
     }
 
     init(selection) {
-
         this.selection = selection;
     }
 
@@ -69,7 +68,6 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     createHeaderFooter() {
-
         const catTitle = addText(
             this,
             this.width / 2,
