@@ -1,4 +1,4 @@
-package com.twaddler.esimtest;
+package com.twaddler.bdp;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -2,4 +2,4 @@
 
 ## Next Steps
 
-- Create it!
+- Add drills.
