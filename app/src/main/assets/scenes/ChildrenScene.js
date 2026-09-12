@@ -16,22 +16,12 @@ export default class ChildrenScene extends Phaser.Scene {
         // Actual selections
         this.selection = {
             version: null,
+            color: null,
             call: null
         };
     }
 
     create() {
-const test = data.childrenVersesData();
-test.forEach(item => {
-    //jp(item.color);
-});
-
-
-        this.selection = {
-            version: null,
-            color: null,
-            call: null
-        };
 
         this.width = this.scale.width;
         this.height = this.scale.height;

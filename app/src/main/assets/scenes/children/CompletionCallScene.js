@@ -16,6 +16,7 @@ export default class CompletionCallScene extends Phaser.Scene {
         // Hide answer.
         this.showAnswer = false;
 
+        // UI
         this.verseQuestionText = null;
         this.verseAnswerText = null;
         this.progressText = null;
@@ -81,16 +82,7 @@ export default class CompletionCallScene extends Phaser.Scene {
                     i.color === this.selection.color
             );
 
-        // --------------------------------------------------
-        // CREATE UI
-        // --------------------------------------------------
-
         this.createDrillUI();
-
-        // --------------------------------------------------
-        // INITIALIZE DRILL
-        // --------------------------------------------------
-
         this.resetDrill();
     }
 

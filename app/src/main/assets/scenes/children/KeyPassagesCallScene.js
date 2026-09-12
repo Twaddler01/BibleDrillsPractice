@@ -1,5 +1,7 @@
+// ./scenes/children/KeyPassagesCallScene.js
 import * as data from '../../data/data.js';
 import DialogWarn from '../../ui/DialogWarn.js';
+import DrillLayout from '../../ui/DrillLayout.js';
 
 export default class KeyPassagesCallScene extends Phaser.Scene {
 
@@ -8,14 +10,22 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         
         this.currentY = 0;
         
-        this.startOverDialog = null;
-        this.resetDialog = null;
-        
         this.drillData = [];
         this.currentIndex = 0;
 
         // Hide initially.
         this.showAnswer = false;
+        
+        // UI
+        this.passagesQuestionText = null;
+        this.passagesAnswerText = null;
+        this.progressText = null;
+
+        this.showAnswerButton = null;
+        this.showAnswerButtonText = null;
+
+        this.previousButton = null;
+        this.nextButton = null;
     }
 
     init(selection) {
@@ -27,10 +37,6 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         this.width = this.scale.width;
         this.height = this.scale.height;
 
-        // ==================================================
-        // BACKGROUND
-        // ==================================================
-
         this.add.rectangle(
             0,
             0,
@@ -40,177 +46,61 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         )
         .setOrigin(0);
 
-        this.createHeaderFooter();
-        this.createDrillUI();
+        this.drillLayout =
+            new DrillLayout(
+                this,
+                {
+                    selection: this.selection,
+        
+                    onReset: () => {
+                        this.resetDrill();
+                    },
+        
+                    onStartOver: () => {
+                        this.scene.stop();
+                        this.scene.start('ChildrenScene');
+                    }
+                }
+            );
+
         this.startKeyPassagesCall();
     }
 
     // ==================================================
-    // HEADER
+    // DRILL UI
     // ==================================================
 
-    createHeaderFooter() {
-        const catTitle = addText(
-            this,
-            this.width / 2,
-            20,
-            'Children\'s Bible Drills',
-            {
-                fontSize: '60px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5, 0);
-
-        const gameTitle = addText(
-            this,
-            this.width / 2,
-            20 + catTitle.height + 20,
-            'Bible Drills Practice',
-            {
-                fontSize: '60px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5, 0);
-
-        this.callData =
-            data.callData().find(
-                i => i.id === this.selection.call
-            );
-
-        this.versionData =
-            data.versionData().find(
-                i => i.id === this.selection.version
-            );
-
-        const selectionTitle = addText(
-            this,
-            this.width / 2,
-            gameTitle.y + gameTitle.height + 20,
-            this.callData.text +
-                ': ' +
-                this.versionData.text,
-            {
-                fontSize: '60px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5, 0);
-
-        // ==================================================
-        // HEADER BUTTONS
-        // ==================================================
-
-        const buttonY =
-            selectionTitle.y +
-            selectionTitle.height +
-            40;
-        
-        const buttonWidth = 260;
-        const buttonHeight = 60;
-
-        // --------------------------------------------------
-        // START OVER (bottom)
-        // --------------------------------------------------
-
-        this.startOverButton =
-            this.add.rectangle(
-                this.width / 2,
-                this.height - buttonHeight - 40,
-                buttonWidth,
-                buttonHeight,
-                0x555555
-            )
-            .setOrigin(0.5, 0)
-            .setInteractive();
-
-        addText(
-            this,
-            this.startOverButton.x,
-            this.startOverButton.y +
-                this.startOverButton.height / 2,
-            'START OVER',
-            {
-                fontSize: '32px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5);
-
-        this.startOverButton.on(
-            'pointerdown',
-            () => {
-                this.startOver();
-            }
-        );
-
-        // --------------------------------------------------
-        // RESET DRILL
-        // --------------------------------------------------
-
-        this.resetDrillButton =
-            this.add.rectangle(
-                this.width / 2,
-                buttonY,
-                buttonWidth,
-                buttonHeight,
-                0x555555
-            )
-            .setOrigin(0.5, 0)
-            .setInteractive();
-
-        addText(
-            this,
-            this.resetDrillButton.x,
-            this.resetDrillButton.y +
-                this.resetDrillButton.height / 2,
-            'RESET DRILL',
-            {
-                fontSize: '32px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5);
-        
-        this.currentY = this.resetDrillButton.y + this.resetDrillButton.height / 2;
-
-        this.resetDrillButton.on(
-            'pointerdown',
-            () => {
-                this.resetDrillDialog();
-            }
-        );
-    }
-
     createDrillUI() {
+
         const centerX =
             this.width / 2;
 
         const startY =
-            this.currentY + 40;
+            this.drillLayout.bottomY + 80;
 
         // ==================================================
         // PROGRESS
         // ==================================================
 
-        this.progressText = addText(this,
-            centerX,
-            startY + 40,
-            '0 / 0',
-            {
-                fontSize: '48px',
-                color: '#aaaaaa'
-            }
-        )
-        .setOrigin(0.5, 0);
+        this.progressText =
+            addText(
+                this,
+                centerX,
+                startY,
+                '0 / 0',
+                {
+                    fontSize: '48px',
+                    color: '#aaaaaa'
+                }
+            )
+            .setOrigin(0.5);
+        
+        this.currentY = startY + this.progressText.height + 40;
 
         // ==================================================
         // SHOW ANSWER
         // ==================================================
 
-        this.currentY = this.progressText.y + this.progressText.height + 40;
-        
         this.showAnswerButton =
             this.add.rectangle(
                 centerX,
@@ -219,20 +109,21 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
                 80,
                 0x555555
             )
-            .setOrigin(0.5, 0)
+            .setOrigin(0.5)
             .setInteractive();
 
         this.showAnswerButtonText =
-            addText(this,
+            addText(
+                this,
                 centerX,
-                this.showAnswerButton.y + this.showAnswerButton.height / 2,
+                this.showAnswerButton.y,
                 'SHOW ANSWER',
                 {
                     fontSize: '40px',
                     color: '#ffffff'
                 }
             )
-            .setOrigin(0.5, 0.5);
+            .setOrigin(0.5);
 
         this.showAnswerButton.on(
             'pointerdown',
@@ -241,7 +132,7 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
             }
         );
         
-        this.currentY = this.showAnswerButtonText.y;
+        this.currentY = this.showAnswerButton.y + this.showAnswerButton.height * 2 + 40;
 
         // ==================================================
         // PREVIOUS
@@ -250,7 +141,7 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         this.previousButton =
             this.add.rectangle(
                 centerX - 250,
-                this.currentY,
+                this.showAnswerButton.y,
                 120,
                 70,
                 0x555555
@@ -273,7 +164,7 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         this.previousButton.on(
             'pointerdown',
             () => {
-                this.previousBook();
+                this.previousDrill();
             }
         );
 
@@ -284,7 +175,7 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         this.nextButton =
             this.add.rectangle(
                 centerX + 250,
-                this.currentY,
+                this.showAnswerButton.y,
                 120,
                 70,
                 0x555555
@@ -307,59 +198,169 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         this.nextButton.on(
             'pointerdown',
             () => {
-                this.nextBook();
+                this.nextDrill();
             }
         );
         
-        this.currentY = this.showAnswerButtonText.y + this.showAnswerButtonText.height + 40;
+        this.currentY = this.showAnswerButton.y + this.showAnswerButton.height / 2 + 40;
+
+        // Drill area
+        this.passagesQuestionText =
+            addText(
+                this,
+                20,
+                this.currentY,
+                'QUESTION',
+                {
+                    fontSize: '36px',
+                    color: '#ffffff',
+
+                    wordWrap: {
+                        width:
+                            this.width - 40
+                    }
+                }
+            )
+            .setOrigin(0);
+
+        this.passagesAnswerText =
+            addText(
+                this,
+                20,
+                this.currentY + this.passagesQuestionText.height + 40,
+                'ANSWER',
+                {
+                    fontSize: '36px',
+                    color: '#ffff00',
+
+                    wordWrap: {
+                        width:
+                            this.width - 40
+                    }
+                }
+            )
 
     }
 
     startKeyPassagesCall() {
-
         // Color only
         this.drillData = data.childrenKeyPassagesData().filter(i => i.color = this.selection.color);
+        
+        this.createDrillUI();
         this.resetDrill();
     }
     
     updateDrillUI() {
-        // start
-        
-    }
+        const currentDrill =
+            this.drillData[
+                this.currentIndex
+            ];
 
-    // ==================================================
-    // RESET DRILL
-    // ==================================================
-
-    resetDrillDialog() {
-        if (this.resetDialog) {
+        if (!currentDrill) {
             return;
         }
 
-        this.resetDrillButton.disableInteractive();
+        // ==================================================
+        // PROGRESS
+        // ==================================================
 
-        this.resetDialog =
-            new DialogWarn(
-                this,
-                {
-                    onWarn:
-                        'Are you sure you want to reset the current drill?',
-                    onConfirm: () => {
-                        this.resetDrill();
-                    },
-                    onCancel: () => {
-                        this.cancelResetDrill();
-                    }
-                }
-            );
+        this.progressText.setText(
+            `${this.currentIndex + 1} / ${this.drillData.length}`
+        );
+
+        // ==================================================
+        // QUESTION
+        // ==================================================
+
+        this.passagesQuestionText.setText(
+            currentDrill.name
+        );
+
+        // ==================================================
+        // ANSWER
+        // ==================================================
+
+        this.passagesAnswerText.setText(
+            currentDrill.ref
+        );
+
+        // ==================================================
+        // ANSWER VISIBILITY
+        // ==================================================
+
+        this.passagesAnswerText.setVisible(
+            this.showAnswer
+        );
+
+        this.showAnswerButtonText.setText(
+            this.showAnswer
+                ? 'HIDE ANSWER'
+                : 'SHOW ANSWER'
+        );
+
+        // ==================================================
+        // NAVIGATION
+        // ==================================================
+
+        this.previousButton.setAlpha(
+            this.currentIndex > 0
+                ? 1
+                : 0.4
+        );
+
+        this.nextButton.setAlpha(
+            this.currentIndex <
+            this.drillData.length - 1
+                ? 1
+                : 0.4
+        );
+    }
+
+    // ==================================================
+    // TOGGLE ANSWER
+    // ==================================================
+
+    toggleAnswer() {
+        this.showAnswer =
+            !this.showAnswer;
+        this.updateDrillUI();
+    }
+
+    // ==================================================
+    // PREVIOUS
+    // ==================================================
+
+    previousDrill() {
+        if (
+            this.currentIndex <= 0
+        ) {
+            return;
+        }
+
+        this.currentIndex--;
+        this.showAnswer = false;
+        this.updateDrillUI();
+    }
+
+    // ==================================================
+    // NEXT
+    // ==================================================
+
+    nextDrill() {
+        if (
+            this.currentIndex >=
+            this.drillData.length - 1
+        ) {
+            return;
+        }
+
+        this.currentIndex++;
+        this.showAnswer = false;
+        this.updateDrillUI();
     }
 
     resetDrill() {
-        if (this.resetDialog) {
-            this.resetDialog.destroy();
-            this.resetDialog = null;
-        }
-        
+
         // --------------------------------------------------
         // SHUFFLE
         // --------------------------------------------------
@@ -381,63 +382,6 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         // UPDATE
         // --------------------------------------------------
 
-        this.resetDrillButton.setInteractive();
         this.updateDrillUI();
-    }
-
-    cancelResetDrill() {
-        this.resetDialog.destroy();
-        this.resetDialog = null;
-        this.resetDrillButton.setInteractive();
-    }
-
-    // ==================================================
-    // START OVER
-    // ==================================================
-
-    startOver() {
-        if (this.startOverDialog) {
-            return;
-        }
-
-        this.startOverButton.disableInteractive();
-
-        this.startOverDialog =
-            new DialogWarn(
-                this,
-                {
-                    onConfirm: () => {
-                        this.confirmStartOver();
-                    },
-
-                    onCancel: () => {
-                        this.cancelStartOver();
-                    }
-                }
-            );
-    }
-
-    // ==================================================
-    // CONFIRM START OVER
-    // ==================================================
-
-    confirmStartOver() {
-        this.startOverDialog.destroy();
-        this.startOverDialog = null;
-
-        this.scene.stop();
-        this.scene.start(
-            'ChildrenScene'
-        );
-    }
-
-    // ==================================================
-    // CANCEL START OVER
-    // ==================================================
-
-    cancelStartOver() {
-        this.startOverDialog.destroy();
-        this.startOverDialog = null;
-        this.startOverButton.setInteractive();
     }
 }

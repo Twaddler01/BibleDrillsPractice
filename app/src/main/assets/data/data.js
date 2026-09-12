@@ -1189,12 +1189,12 @@ export function childrenVersesData() {
 export function childrenKeyPassagesData() {
         return [
       {
-        "name": "God&apos;s Covenant with Abraham",
+        "name": "God\'s Covenant with Abraham",
         "ref": "Genesis 12:1-3",
         "color": "blue"
       },
       {
-        "name": "A Shepherd&apos;s Song",
+        "name": "A Shepherd\'s Song",
         "ref": "Psalm 23",
         "color": "blue"
       },
@@ -1219,7 +1219,7 @@ export function childrenKeyPassagesData() {
         "color": "blue"
       },
       {
-        "name": "Jesus&apos; First Miracle",
+        "name": "Jesus\' First Miracle",
         "ref": "John 2:1-11",
         "color": "blue"
       },
@@ -1269,7 +1269,7 @@ export function childrenKeyPassagesData() {
         "color": "green"
       },
       {
-        "name": "The First Lord’s Supper",
+        "name": "The First Lord\'s Supper",
         "ref": "Luke 22:15-20",
         "color": "green"
       },
