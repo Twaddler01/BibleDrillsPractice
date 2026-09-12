@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,9 +36,31 @@ jobs:
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: Rename APK
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk \
+             app/build/outputs/apk/debug/BibleDrillsPractice-debug.apk
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: BibleDrillsPractice-WebView-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/BibleDrillsPractice-debug.apk
           if-no-files-found: error
+
+      - name: Update Debug Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="debug-latest"
+          APK="app/build/outputs/apk/debug/BibleDrillsPractice-debug.apk"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release delete-asset "$TAG" "BibleDrillsPractice-debug.apk" --yes || true
+            gh release upload "$TAG" "$APK" --clobber
+          else
+            gh release create "$TAG" "$APK" \
+              --title "Debug Build" \
+              --notes "Latest automatically generated debug APK." \
+              --prerelease
+          fi
