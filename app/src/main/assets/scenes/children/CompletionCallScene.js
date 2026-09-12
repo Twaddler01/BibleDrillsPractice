@@ -1,5 +1,4 @@
 // ./scenes/children/CompletionCallScene.js
-
 import * as data from '../../data/data.js';
 import DialogWarn from '../../ui/DialogWarn.js';
 import DrillLayout from '../../ui/DrillLayout.js';
@@ -11,19 +10,11 @@ export default class CompletionCallScene extends Phaser.Scene {
 
         this.currentY = 0;
 
-        // ==================================================
-        // DRILL STATE
-        // ==================================================
-
         this.drillData = [];
         this.currentIndex = 0;
 
         // Hide answer.
         this.showAnswer = false;
-
-        // ==================================================
-        // PHASER OBJECTS
-        // ==================================================
 
         this.verseQuestionText = null;
         this.verseAnswerText = null;
@@ -41,12 +32,9 @@ export default class CompletionCallScene extends Phaser.Scene {
     }
 
     create() {
+
         this.width = this.scale.width;
         this.height = this.scale.height;
-
-        // ==================================================
-        // BACKGROUND
-        // ==================================================
 
         this.add.rectangle(
             0,
@@ -56,10 +44,6 @@ export default class CompletionCallScene extends Phaser.Scene {
             0x111111
         )
         .setOrigin(0);
-
-        // ==================================================
-        // CREATE UI
-        // ==================================================
 
         this.drillLayout =
             new DrillLayout(
@@ -80,10 +64,6 @@ export default class CompletionCallScene extends Phaser.Scene {
         
         this.startCompletionCall();
     }
-
-    // ==================================================
-    // START COMPLETION CALL
-    // ==================================================
 
     startCompletionCall() {
 
@@ -134,7 +114,7 @@ export default class CompletionCallScene extends Phaser.Scene {
             addText(
                 this,
                 centerX,
-                startY + 40,
+                startY,
                 '',
                 {
                     fontSize: '48px',
@@ -143,7 +123,7 @@ export default class CompletionCallScene extends Phaser.Scene {
             )
             .setOrigin(0.5);
         
-        this.currentY = startY + 40 + this.progressText.height + 40;
+        this.currentY = startY + this.progressText.height + 40;
 
         // ==================================================
         // SHOW ANSWER
@@ -180,7 +160,7 @@ export default class CompletionCallScene extends Phaser.Scene {
             }
         );
         
-        this.currentY = this.showAnswerButton.y + this.showAnswerButton.height + 40;
+        this.currentY = this.showAnswerButton.y + this.showAnswerButton.height * 2 + 40;
 
         // ==================================================
         // PREVIOUS
