@@ -10,6 +10,12 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         
         this.startOverDialog = null;
         this.resetDialog = null;
+        
+        this.drillData = [];
+        this.currentIndex = 0;
+
+        // Hide initially.
+        this.showAnswer = false;
     }
 
     init(selection) {
@@ -35,6 +41,7 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         .setOrigin(0);
 
         this.createHeaderFooter();
+        this.createDrillUI();
         this.startKeyPassagesCall();
     }
 
@@ -176,11 +183,6 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         );
     }
 
-    startKeyPassagesCall() {
-        this.createDrillUI();
-        this.updateDrill();
-    }
-
     createDrillUI() {
         const centerX =
             this.width / 2;
@@ -313,6 +315,18 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
 
     }
 
+    startKeyPassagesCall() {
+
+        // Color only
+        this.drillData = data.childrenKeyPassagesData().filter(i => i.color = this.selection.color);
+        this.resetDrill();
+    }
+    
+    updateDrillUI() {
+        // start
+        
+    }
+
     // ==================================================
     // RESET DRILL
     // ==================================================
@@ -346,10 +360,29 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
             this.resetDialog = null;
         }
         
-        // Reset action here, if needed
-        
+        // --------------------------------------------------
+        // SHUFFLE
+        // --------------------------------------------------
+
+        Phaser.Utils.Array.Shuffle(
+            this.drillData
+        );
+
+        // --------------------------------------------------
+        // RESET STATE
+        // --------------------------------------------------
+
+        this.currentIndex = 0;
+
+        // Hide initially.
+        this.showAnswer = false;
+
+        // --------------------------------------------------
+        // UPDATE
+        // --------------------------------------------------
 
         this.resetDrillButton.setInteractive();
+        this.updateDrillUI();
     }
 
     cancelResetDrill() {
