@@ -7,6 +7,8 @@ export default class BookCallScene extends Phaser.Scene {
     constructor() {
         super('BookCallScene');
 
+        this.currentY = 0;
+        
         this.startOverDialog = null;
         this.resetDialog = null;
 
@@ -190,6 +192,8 @@ export default class BookCallScene extends Phaser.Scene {
             }
         )
         .setOrigin(0.5);
+        
+        this.currentY = this.resetDrillButton.y + this.resetDrillButton.height / 2;
 
         this.resetDrillButton.on(
             'pointerdown',
@@ -220,7 +224,7 @@ export default class BookCallScene extends Phaser.Scene {
             this.width / 2;
 
         const startY =
-            this.resetDrillButton.y + 80;
+            this.currentY + 40;
 
         // ==================================================
         // PROGRESS
@@ -236,51 +240,53 @@ export default class BookCallScene extends Phaser.Scene {
                 color: '#aaaaaa'
             }
         )
-        .setOrigin(0.5);
+        .setOrigin(0.5, 0);
 
         // ==================================================
         // CURRENT BOOK
         // ==================================================
 
+        this.currentY = this.progressText.y + this.progressText.height + 40;
         this.bookText = addText(
             this,
             centerX,
-            startY + 100,
+            this.currentY,
             '',
             {
                 fontSize: '72px',
                 color: '#ffffff'
             }
         )
-        .setOrigin(0.5);
+        .setOrigin(0.5, 0);
 
         // ==================================================
         // SHOW ANSWER
         // ==================================================
 
+        this.currentY = this.bookText.y + this.bookText.height + 40;
         this.showAnswerButton =
             this.add.rectangle(
                 centerX,
-                startY + 220,
+                this.currentY,
                 360,
                 80,
                 0x555555
             )
-            .setOrigin(0.5)
+            .setOrigin(0.5, 0)
             .setInteractive();
 
         this.showAnswerButtonText =
             addText(
                 this,
                 centerX,
-                this.showAnswerButton.y,
+                this.showAnswerButton.y + this.showAnswerButton.height / 2,
                 'SHOW ANSWER',
                 {
                     fontSize: '40px',
                     color: '#ffffff'
                 }
             )
-            .setOrigin(0.5);
+            .setOrigin(0.5, 0.5);
 
         this.showAnswerButton.on(
             'pointerdown',
@@ -288,6 +294,8 @@ export default class BookCallScene extends Phaser.Scene {
                 this.toggleAnswer();
             }
         );
+        
+        this.currentY = this.showAnswerButtonText.y;
 
         // ==================================================
         // PREVIOUS
@@ -296,7 +304,7 @@ export default class BookCallScene extends Phaser.Scene {
         this.previousButton =
             this.add.rectangle(
                 centerX - 250,
-                startY + 220,
+                this.currentY,
                 120,
                 70,
                 0x555555
@@ -330,7 +338,7 @@ export default class BookCallScene extends Phaser.Scene {
         this.nextButton =
             this.add.rectangle(
                 centerX + 250,
-                startY + 220,
+                this.currentY,
                 120,
                 70,
                 0x555555
@@ -356,6 +364,8 @@ export default class BookCallScene extends Phaser.Scene {
                 this.nextBook();
             }
         );
+        
+        this.currentY = this.showAnswerButtonText.y + this.showAnswerButtonText.height + 40;
     }
 
     // ==================================================
@@ -487,7 +497,7 @@ export default class BookCallScene extends Phaser.Scene {
             this.width / 2;
 
         const centerY =
-            this.height * 0.65;
+            this.currentY;
 
         const spacing = 30;
 
@@ -623,10 +633,8 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     toggleAnswer() {
-
         this.showAnswer =
             !this.showAnswer;
-
         this.updateDrillUI();
     }
 
@@ -635,7 +643,6 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     previousBook() {
-
         if (
             this.currentIndex <= 0
         ) {
@@ -643,10 +650,8 @@ export default class BookCallScene extends Phaser.Scene {
         }
 
         this.currentIndex--;
-
         // Hide answer when changing question.
         this.showAnswer = false;
-
         this.updateDrillUI();
     }
 
@@ -655,7 +660,6 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     nextBook() {
-
         if (
             this.currentIndex >=
             this.books.length - 1
@@ -664,10 +668,8 @@ export default class BookCallScene extends Phaser.Scene {
         }
 
         this.currentIndex++;
-
         // Hide answer when changing question.
         this.showAnswer = false;
-
         this.updateDrillUI();
     }
 
@@ -755,13 +757,10 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     confirmStartOver() {
-
         this.startOverDialog.destroy();
-
         this.startOverDialog = null;
 
         this.scene.stop();
-
         this.scene.start(
             'ChildrenScene'
         );
@@ -772,11 +771,8 @@ export default class BookCallScene extends Phaser.Scene {
     // ==================================================
 
     cancelStartOver() {
-
         this.startOverDialog.destroy();
-
         this.startOverDialog = null;
-
         this.startOverButton.setInteractive();
     }
 }
