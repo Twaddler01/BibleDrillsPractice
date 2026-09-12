@@ -2,6 +2,7 @@
 
 import * as data from '../../data/data.js';
 import DialogWarn from '../../ui/DialogWarn.js';
+import DrillLayout from '../../ui/DrillLayout.js';
 
 export default class CompletionCallScene extends Phaser.Scene {
 
@@ -9,9 +10,6 @@ export default class CompletionCallScene extends Phaser.Scene {
         super('CompletionCallScene');
 
         this.currentY = 0;
-        
-        this.startOverDialog = null;
-        this.resetDialog = null;
 
         // ==================================================
         // DRILL STATE
@@ -36,9 +34,6 @@ export default class CompletionCallScene extends Phaser.Scene {
 
         this.previousButton = null;
         this.nextButton = null;
-
-        this.startOverButton = null;
-        this.resetDrillButton = null;
     }
 
     init(selection) {
@@ -66,151 +61,24 @@ export default class CompletionCallScene extends Phaser.Scene {
         // CREATE UI
         // ==================================================
 
-        this.createHeaderFooter();
+        this.drillLayout =
+            new DrillLayout(
+                this,
+                {
+                    selection: this.selection,
+        
+                    onReset: () => {
+                        this.resetDrill();
+                    },
+        
+                    onStartOver: () => {
+                        this.scene.stop();
+                        this.scene.start('ChildrenScene');
+                    }
+                }
+            );
+        
         this.startCompletionCall();
-    }
-
-    // ==================================================
-    // HEADER
-    // ==================================================
-
-    createHeaderFooter() {
-        const catTitle =
-            addText(
-                this,
-                this.width / 2,
-                20,
-                'Children\'s Bible Drills',
-                {
-                    fontSize: '60px',
-                    color: '#ffffff'
-                }
-            )
-            .setOrigin(0.5, 0);
-
-        const gameTitle =
-            addText(
-                this,
-                this.width / 2,
-                20 +
-                catTitle.height +
-                20,
-                'Bible Drills Practice',
-                {
-                    fontSize: '60px',
-                    color: '#ffffff'
-                }
-            )
-            .setOrigin(0.5, 0);
-
-        this.callData =
-            data.callData().find(
-                i => i.id === this.selection.call
-            );
-
-        this.versionData =
-            data.versionData().find(
-                i => i.id === this.selection.version
-            );
-
-        const selectionTitle =
-            addText(
-                this,
-                this.width / 2,
-                gameTitle.y +
-                gameTitle.height +
-                20,
-                this.callData.text +
-                ': ' +
-                this.versionData.text,
-                {
-                    fontSize: '60px',
-                    color: '#ffffff'
-                }
-            )
-            .setOrigin(0.5, 0);
-
-        // ==================================================
-        // BUTTONS
-        // ==================================================
-
-        const buttonY =
-            selectionTitle.y +
-            selectionTitle.height +
-            40;
-
-        const buttonWidth = 260;
-        const buttonHeight = 60;
-
-        // ==================================================
-        // START OVER
-        // ==================================================
-
-        this.startOverButton =
-            this.add.rectangle(
-                this.width / 2,
-                this.height -
-                buttonHeight -
-                40,
-                buttonWidth,
-                buttonHeight,
-                0x555555
-            )
-            .setOrigin(0.5, 0)
-            .setInteractive();
-
-        addText(
-            this,
-            this.startOverButton.x,
-            this.startOverButton.y +
-            this.startOverButton.height / 2,
-            'START OVER',
-            {
-                fontSize: '32px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5);
-
-        this.startOverButton.on(
-            'pointerdown',
-            () => {
-                this.startOver();
-            }
-        );
-
-        // ==================================================
-        // RESET DRILL
-        // ==================================================
-
-        this.resetDrillButton =
-            this.add.rectangle(
-                this.width / 2,
-                buttonY,
-                buttonWidth,
-                buttonHeight,
-                0x555555
-            )
-            .setOrigin(0.5, 0)
-            .setInteractive();
-
-        addText(this,
-            this.resetDrillButton.x,
-            this.resetDrillButton.y + buttonHeight / 2,
-            'RESET DRILL',
-            {
-                fontSize: '32px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5, 0.5);
-
-        this.resetDrillButton.on(
-            'pointerdown',
-            () => {
-                this.resetDrillDialog();
-            }
-        );
     }
 
     // ==================================================
@@ -256,7 +124,7 @@ export default class CompletionCallScene extends Phaser.Scene {
             this.width / 2;
 
         const startY =
-            this.resetDrillButton.y + 80;
+            this.drillLayout.bottomY + 80;
 
         // ==================================================
         // PROGRESS
@@ -562,44 +430,10 @@ export default class CompletionCallScene extends Phaser.Scene {
     }
 
     // ==================================================
-    // RESET DRILL DIALOG
-    // ==================================================
-
-    resetDrillDialog() {
-
-        if (this.resetDialog) {
-            return;
-        }
-
-        this.resetDrillButton.disableInteractive();
-
-        this.resetDialog =
-            new DialogWarn(
-                this,
-                {
-                    onWarn:
-                        'Are you sure you want to reset the current drill?',
-
-                    onConfirm: () => {
-                        this.resetDrill();
-                    },
-
-                    onCancel: () => {
-                        this.cancelResetDrill();
-                    }
-                }
-            );
-    }
-
-    // ==================================================
     // RESET DRILL
     // ==================================================
 
     resetDrill() {
-        if (this.resetDialog) {
-            this.resetDialog.destroy();
-            this.resetDialog = null;
-        }
 
         // --------------------------------------------------
         // SHUFFLE
@@ -623,66 +457,5 @@ export default class CompletionCallScene extends Phaser.Scene {
         // --------------------------------------------------
 
         this.updateDrillUI();
-        this.resetDrillButton.setInteractive();
-    }
-
-    // ==================================================
-    // CANCEL RESET
-    // ==================================================
-
-    cancelResetDrill() {
-        this.resetDialog.destroy();
-        this.resetDialog = null;
-        this.resetDrillButton.setInteractive();
-    }
-
-    // ==================================================
-    // START OVER
-    // ==================================================
-
-    startOver() {
-        if (this.startOverDialog) {
-            return;
-        }
-
-        this.startOverButton.disableInteractive();
-
-        this.startOverDialog =
-            new DialogWarn(
-                this,
-                {
-                    onConfirm: () => {
-                        this.confirmStartOver();
-                    },
-
-                    onCancel: () => {
-                        this.cancelStartOver();
-                    }
-                }
-            );
-    }
-
-    // ==================================================
-    // CONFIRM START OVER
-    // ==================================================
-
-    confirmStartOver() {
-        this.startOverDialog.destroy();
-        this.startOverDialog = null;
-
-        this.scene.stop();
-        this.scene.start(
-            'ChildrenScene'
-        );
-    }
-
-    // ==================================================
-    // CANCEL START OVER
-    // ==================================================
-
-    cancelStartOver() {
-        this.startOverDialog.destroy();
-        this.startOverDialog = null;
-        this.startOverButton.setInteractive();
     }
 }
