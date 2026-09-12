@@ -20,8 +20,8 @@ export default class CompletionCallScene extends Phaser.Scene {
         this.drillData = [];
         this.currentIndex = 0;
 
-        // Answer is shown initially.
-        this.showAnswer = true;
+        // Hide answer.
+        this.showAnswer = false;
 
         // ==================================================
         // PHASER OBJECTS
