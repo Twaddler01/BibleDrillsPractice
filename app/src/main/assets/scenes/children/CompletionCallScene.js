@@ -430,4 +430,8 @@ export default class CompletionCallScene extends Phaser.Scene {
 
         this.updateDrillUI();
     }
+    
+    /*update(time, delta) {
+        this.drillLayout?.update(time, delta);
+    }*/
 }

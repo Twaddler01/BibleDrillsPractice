@@ -1,12 +1,20 @@
 // ./ui/DrillLayout.js
 import * as data from '../data/data.js';
 import DialogWarn from './DialogWarn.js';
+import Timer from './Timer.js';
 
 export default class DrillLayout {
 
     constructor(scene, options = {}) {
 
         this.scene = scene;
+
+        // Get update method/delta for every scene (Timer)
+        this.updateHandler = this.update.bind(this);
+        this.scene.events.on(
+            'update',
+            this.updateHandler
+        );
 
         // ==================================================
         // OPTIONS
@@ -51,6 +59,7 @@ export default class DrillLayout {
 
         this.resetDialog = null;
         this.startOverDialog = null;
+        this.timer = null;
 
         // ==================================================
         // PHASER OBJECTS
@@ -71,13 +80,9 @@ export default class DrillLayout {
     // ==================================================
 
     create() {
-
         this.getSelectionData();
-
         this.createHeader();
-
         this.createButtons();
-
         this.contentY =
             this.resetDrillButton.y +
             this.resetDrillButton.height +
@@ -139,7 +144,7 @@ export default class DrillLayout {
             )
             .setOrigin(0.5, 0);
 
-        addText(
+        const drillOptions = addText(
             this.scene,
             this.width / 2,
             gameTitle.y +
@@ -154,6 +159,37 @@ export default class DrillLayout {
             }
         )
         .setOrigin(0.5, 0);
+        
+        // TIMER
+        this.timerButton =
+            this.scene.add.rectangle(
+                20,
+                drillOptions.y + drillOptions.height + 20,
+                60,
+                60,
+                0x555555
+            )
+            .setOrigin(0)
+            .setInteractive();
+        
+        this.timerButtonIcon = 
+            this.scene.add.text(
+                this.timerButton.x + this.timerButton.width / 2,
+                this.timerButton.y + this.timerButton.height / 2,
+                '⌛',
+                {
+                    fontSize: '32px',
+                    color: '#ffffff'
+                }
+            )
+            .setOrigin(0.5, 0.5);
+        
+        this.timerButton.on(
+            'pointerdown',
+            () => {
+                this.startTimer();
+            }
+        );
     }
 
     // ==================================================
@@ -288,7 +324,7 @@ export default class DrillLayout {
 
     resetDrill() {
 
-        if (this.resetDialog) {
+        if (this.resetDialog || this.startOverDialog) {
             return;
         }
 
@@ -317,7 +353,6 @@ export default class DrillLayout {
     // ==================================================
 
     confirmResetDrill() {
-
         if (this.resetDialog) {
             this.resetDialog.destroy();
             this.resetDialog = null;
@@ -348,7 +383,7 @@ export default class DrillLayout {
 
     startOver() {
 
-        if (this.startOverDialog) {
+        if (this.startOverDialog || this.resetDialog) {
             return;
         }
 
@@ -398,6 +433,35 @@ export default class DrillLayout {
     }
 
     // ==================================================
+    // TIMER
+    // ==================================================
+
+    startTimer() {
+        if (this.timer) {
+            this.timer.destroy();
+            this.timer = null;
+            return;
+        }
+
+        this.timer =
+            new Timer(
+                this.scene,
+                {
+                    bottomY: this.bottomY,
+                    time: 10,
+                    onClose: () => {
+                        this.timer?.destroy();
+                        this.timer = null;
+                    }
+                }
+            );
+    }
+
+    update(time, delta) {
+        this.timer?.update(delta);
+    }
+
+    // ==================================================
     // DESTROY
     // ==================================================
 
@@ -422,5 +486,13 @@ export default class DrillLayout {
             this.startOverButton.destroy();
             this.startOverButton = null;
         }
+        if (this.timer) {
+            this.timer.destroy();
+            this.timer = null;
+        }
+        this.scene.events.off(
+                'update',
+                this.updateHandler
+            );
     }
 }

@@ -128,6 +128,7 @@ export default class DialogWarn {
             )
             .setOrigin(0.5)
             .setDepth(100)
+            .setStrokeStyle(1, 0xffffff)
         );
     
     
@@ -222,6 +223,9 @@ export default class DialogWarn {
 
     addElement(element) {
         this.elements.push(element);
+        if (element.depth > 0) {
+            element.setDepth(element.depth + 10);
+        }
         return element;
     }
 
