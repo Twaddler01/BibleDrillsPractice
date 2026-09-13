@@ -2,21 +2,52 @@
 
 export function callData() {
     return [
+        // Children
         {
             id: 'completionCall',
-            text: 'Completion Call'
+            text: 'Completion Call',
+            group: 'children'
         },
         {
             id: 'quotationCall',
-            text: 'Quotation Call'
+            text: 'Quotation Call',
+            group: 'children'
         },
         {
             id: 'keyPassagesCall',
-            text: 'Key Passages Call'
+            text: 'Key Passages Call',
+            group: 'children'
         },
         {
             id: 'bookCall',
-            text: 'Book Call'
+            text: 'Book Call',
+            group: 'children'
+        },
+        // Youth
+        {
+            id: 'identifyingVersesDrill',
+            text: 'Identifying Verses Drill',
+            group: 'youth'
+        },
+        {
+            id: 'scriptureSearchingDrill',
+            text: 'Scripture Searching Drill',
+            group: 'youth'
+        },
+        {
+            id: 'doctrinalDril',
+            text: 'Doctrinal Dril',
+            group: 'youth'
+        },
+        {
+            id: 'bibleAnswersDrill',
+            text: 'Bible Answers Drill',
+            group: 'youth'
+        },
+        {
+            id: 'bookDrill',
+            text: 'Book Drill',
+            group: 'youth'
         }
     ];
 }

@@ -1,10 +1,10 @@
-// ./scenes/ChildrenScene.js
+// ./scenes/YouthScene.js
 import * as data from '../data/data.js';
 
-export default class ChildrenScene extends Phaser.Scene {
+export default class YouthScene extends Phaser.Scene {
 
     constructor() {
-        super('ChildrenScene');
+        super('YouthScene');
 
     }
 
@@ -42,40 +42,6 @@ export default class ChildrenScene extends Phaser.Scene {
         this.selectColorUI();
         this.practiceTypeUI();
         this.createGoButton();
-        this.createSwitchGroup();
-    }
-
-    createSwitchGroup() {
-        const button =
-            this.add.rectangle(
-                this.width / 2,
-                this.height - 50,
-                this.width / 1.5,
-                60,
-                0x800000
-            )
-            .setOrigin(0.5)
-            .setInteractive();
-
-        const text =
-            addText(this,
-                button.x,
-                button.y,
-                'Switch to Youth Drills',
-                {
-                    fontSize: '24px',
-                    color: '#ffffff'
-                }
-            )
-            .setOrigin(0.5)
-            .setInteractive();
-            
-            button.on(
-                'pointerdown',
-                () => {
-                    this.scene.start('YouthScene');
-                }
-            );
     }
 
     createHeader() {
@@ -83,7 +49,7 @@ export default class ChildrenScene extends Phaser.Scene {
             this,
             this.width / 2,
             20,
-            'Children\'s Bible Drills',
+            'Youth Bible Drills',
             {
                 fontSize: '50px',
                 color: '#ffffff'
@@ -332,12 +298,12 @@ export default class ChildrenScene extends Phaser.Scene {
         currentY += 40 + 20;
     
         const buttonW =
-            this.width / 2 - 40;
+            this.width / 2 - 30;
     
         const buttonH = 60;
         const gap = 20;
     
-        const callData = data.callData().filter(i => i.group === 'children');
+        const callData = data.callData().filter(i => i.group === 'youth');
     
         callData.forEach(
             (item, index) => {
@@ -371,7 +337,7 @@ export default class ChildrenScene extends Phaser.Scene {
                         y + buttonH / 2,
                         item.text,
                         {
-                            fontSize: '24px',
+                            fontSize: '20px',
                             color: '#ffffff'
                         }
                     )
@@ -431,7 +397,7 @@ export default class ChildrenScene extends Phaser.Scene {
                 x,
                 y,
                 150,
-                60,
+                70,
                 0x008000
             )
             .setOrigin(0)
@@ -489,22 +455,27 @@ export default class ChildrenScene extends Phaser.Scene {
     }
 
     startDrill() {
+        
         switch (this.selection.call) {
         
-            case 'completionCall':
-                this.scene.start('CompletionCallScene', this.selection);
+            case 'identifyingVersesDrill':
+                this.scene.start('IdentifyingVersesDrillScene', this.selection);
                 break;
         
-            case 'quotationCall':
-                this.scene.start('QuotationCallScene', this.selection);
+            case 'scriptureSearchingDrill':
+                this.scene.start('ScriptureSearchingDrillScene', this.selection);
                 break;
         
-            case 'keyPassagesCall':
-                this.scene.start('KeyPassagesCallScene', this.selection);
+            case 'doctrinalDril':
+                this.scene.start('DoctrinalDrilScene', this.selection);
                 break;
-        
-            case 'bookCall':
-                this.scene.start('BookCallScene', this.selection);
+                
+            case 'bibleAnswersDrill':
+                this.scene.start('BibleAnswersDrill', this.selection);
+                break;
+                
+            case 'bookDrill':
+                this.scene.start('BookDrillScene', this.selection);
                 break;
         }
     }

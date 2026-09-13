@@ -1,10 +1,15 @@
-//import BootScene from './scenes/BootScene.js';
+import BootScene from './scenes/BootScene.js';
 import ChildrenScene from './scenes/ChildrenScene.js';
-//import YouthScene from './scenes/YouthScene.js';
+import YouthScene from './scenes/YouthScene.js';
 import BookCallScene from './scenes/children/BookCallScene.js';
 import CompletionCallScene from './scenes/children/CompletionCallScene.js';
 import KeyPassagesCallScene from './scenes/children/KeyPassagesCallScene.js';
 import QuotationCallScene from './scenes/children/QuotationCallScene.js';
+import IdentifyingVersesDrillScene from './scenes/youth/IdentifyingVersesDrillScene.js';
+import ScriptureSearchingDrillScene from './scenes/youth/ScriptureSearchingDrillScene.js';
+import DoctrinalDrilScene from './scenes/youth/DoctrinalDrilScene.js';
+import BibleAnswersDrill from './scenes/youth/BibleAnswersDrill.js';
+import BookDrillScene from './scenes/youth/BookDrillScene.js';
 
 /*
 import { DEBUG } from './config.js';
@@ -23,11 +28,20 @@ const config = {
     parent: 'main',
     type: Phaser.AUTO,
     scene: [
+        BootScene,
+        YouthScene,
+        // Children
         ChildrenScene,
         BookCallScene,
         CompletionCallScene,
         KeyPassagesCallScene,
-        QuotationCallScene
+        QuotationCallScene,
+        // Youth
+        IdentifyingVersesDrillScene,
+        ScriptureSearchingDrillScene,
+        DoctrinalDrilScene,
+        BibleAnswersDrill,
+        BookDrillScene
     ],
     scale: {
         mode: Phaser.Scale.FIT,

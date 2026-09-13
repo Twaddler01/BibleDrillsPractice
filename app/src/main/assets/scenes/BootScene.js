@@ -1,0 +1,82 @@
+// ./scenes/BootScene.js
+export default class BootScene extends Phaser.Scene {
+
+    constructor() {
+        super('BootScene');
+    }
+
+    create() {
+
+        this.width = this.scale.width;
+        this.height = this.scale.height;
+
+        // Background
+        this.add.rectangle(
+            0,
+            0,
+            this.width,
+            this.height,
+            0x111111
+        )
+        .setOrigin(0);
+
+        // Title
+        addText(
+            this,
+            this.width / 2,
+            this.height * 0.3,
+            'Choose Drill Type:',
+            {
+                fontSize: '50px',
+                color: '#ffffff'
+            }
+        )
+        .setOrigin(0.5, 0);
+
+        // Children button
+        const childrenButton = addText(
+            this,
+            this.width / 2,
+            this.height * 0.45,
+            'Children',
+            {
+                fontSize: '40px',
+                color: '#ffffff',
+                backgroundColor: '#555555',
+                padding: {
+                    x: 30,
+                    y: 15
+                }
+            }
+        )
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true });
+
+        childrenButton.on('pointerdown', () => {
+            this.scene.start('ChildrenScene');
+        });
+
+        // Youth button
+        const youthButton = addText(
+            this,
+            this.width / 2,
+            this.height * 0.60,
+            'Youth',
+            {
+                fontSize: '40px',
+                color: '#ffffff',
+                backgroundColor: '#555555',
+                padding: {
+                    x: 30,
+                    y: 15
+                }
+            }
+        )
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true });
+
+        youthButton.on('pointerdown', () => {
+            this.scene.start('YouthScene');
+        });
+    }
+}

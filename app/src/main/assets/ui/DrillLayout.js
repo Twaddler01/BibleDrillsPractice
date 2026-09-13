@@ -123,7 +123,7 @@ export default class DrillLayout {
                 20,
                 'Children\'s Bible Drills',
                 {
-                    fontSize: '60px',
+                    fontSize: '50px',
                     color: '#ffffff'
                 }
             )
@@ -138,7 +138,7 @@ export default class DrillLayout {
                 20,
                 'Bible Drills Practice',
                 {
-                    fontSize: '60px',
+                    fontSize: '50px',
                     color: '#ffffff'
                 }
             )
@@ -154,7 +154,7 @@ export default class DrillLayout {
             ': ' +
             this.versionData.text,
             {
-                fontSize: '60px',
+                fontSize: '40px',
                 color: '#ffffff'
             }
         )
@@ -217,7 +217,7 @@ export default class DrillLayout {
                 resetY,
                 buttonWidth,
                 buttonHeight,
-                0x555555
+                0x800000
             )
             .setOrigin(0.5, 0)
             .setInteractive();
@@ -256,7 +256,7 @@ export default class DrillLayout {
                 40,
                 buttonWidth,
                 buttonHeight,
-                0x555555
+                0x800000
             )
             .setOrigin(0.5, 0)
             .setInteractive();
