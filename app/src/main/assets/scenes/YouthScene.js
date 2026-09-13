@@ -42,13 +42,66 @@ export default class YouthScene extends Phaser.Scene {
         this.selectColorUI();
         this.practiceTypeUI();
         this.createGoButton();
+        this.createSwitchGroup();
+    }
+
+    createSwitchGroup() {
+        const button =
+            this.add.rectangle(
+                this.width / 2,
+                this.height - 50,
+                this.width / 1.5,
+                60,
+                0x800000
+            )
+            .setOrigin(0.5)
+            .setInteractive();
+
+        const text =
+            addText(this,
+                button.x,
+                button.y,
+                'Switch to Children\'s Drills',
+                {
+                    fontSize: '24px',
+                    color: '#ffffff'
+                }
+            )
+            .setOrigin(0.5);
+            
+            button.on(
+                'pointerdown',
+                () => {
+                    this.scene.start('ChildrenScene');
+                }
+            );
     }
 
     createHeader() {
+        this.add.rectangle(
+            0,
+            0,
+            this.width,
+            80,
+            0xffff00
+        )
+        .setOrigin(0);
+
+         const gameTitle = addText(this,
+            this.width / 2,
+            40,
+            'Bible Drills Practice',
+            {
+                fontSize: '50px',
+                color: '#000000'
+            }
+        )
+        .setOrigin(0.5, 0.5);
+
         const catTitle = addText(
             this,
             this.width / 2,
-            20,
+            20 + gameTitle.height + 20,
             'Youth Bible Drills',
             {
                 fontSize: '50px',
@@ -57,20 +110,7 @@ export default class YouthScene extends Phaser.Scene {
         )
         .setOrigin(0.5, 0);
         
-         const gameTitle = addText(
-            this,
-            this.width / 2,
-            20 + catTitle.height + 20,
-            'Bible Drills Practice',
-            {
-                fontSize: '50px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5, 0);
-        
-        this.currentY = gameTitle.y + gameTitle.height + 40;
-
+        this.currentY = catTitle.y + catTitle.height + 40;
     }
 
     // ==================================================

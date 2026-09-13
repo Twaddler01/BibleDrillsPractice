@@ -67,8 +67,7 @@ export default class ChildrenScene extends Phaser.Scene {
                     color: '#ffffff'
                 }
             )
-            .setOrigin(0.5)
-            .setInteractive();
+            .setOrigin(0.5);
             
             button.on(
                 'pointerdown',
@@ -79,10 +78,30 @@ export default class ChildrenScene extends Phaser.Scene {
     }
 
     createHeader() {
+        this.add.rectangle(
+            0,
+            0,
+            this.width,
+            80,
+            0xffff00
+        )
+        .setOrigin(0);
+
+         const gameTitle = addText(this,
+            this.width / 2,
+            40,
+            'Bible Drills Practice',
+            {
+                fontSize: '50px',
+                color: '#000000'
+            }
+        )
+        .setOrigin(0.5, 0.5);
+
         const catTitle = addText(
             this,
             this.width / 2,
-            20,
+            20 + gameTitle.height + 20,
             'Children\'s Bible Drills',
             {
                 fontSize: '50px',
@@ -91,20 +110,7 @@ export default class ChildrenScene extends Phaser.Scene {
         )
         .setOrigin(0.5, 0);
         
-         const gameTitle = addText(
-            this,
-            this.width / 2,
-            20 + catTitle.height + 20,
-            'Bible Drills Practice',
-            {
-                fontSize: '50px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5, 0);
-        
-        this.currentY = gameTitle.y + gameTitle.height + 40;
-
+        this.currentY = catTitle.y + catTitle.height + 40;
     }
 
     // ==================================================

@@ -20,6 +20,26 @@ export default class BootScene extends Phaser.Scene {
         )
         .setOrigin(0);
 
+        this.add.rectangle(
+            0,
+            0,
+            this.width,
+            80,
+            0xffff00
+        )
+        .setOrigin(0);
+
+         addText(this,
+            this.width / 2,
+            40,
+            'Bible Drills Practice',
+            {
+                fontSize: '50px',
+                color: '#000000'
+            }
+        )
+        .setOrigin(0.5, 0.5);
+
         // Title
         addText(
             this,

@@ -113,13 +113,49 @@ export default class DrillLayout {
     // ==================================================
     // HEADER
     // ==================================================
-
+// wip use rect as coord
     createHeader() {
+        this.scene.add.rectangle(
+            0,
+            0,
+            this.width,
+            80,
+            0xffff00
+        )
+        .setOrigin(0);
+
+        const gameTitle =
+            addText(this.scene,
+                this.width / 2,
+                40,
+                'Bible Drills Practice',
+                {
+                    fontSize: '50px',
+                    color: '#000000'
+                }
+            )
+            .setOrigin(0.5, 0.5);
+
+        const color = {
+            red: 0xff0000,
+            green: 0x006400,
+            blue: 0x0000ff
+        };
+
+        this.scene.add.rectangle(
+            0,
+            gameTitle.y * 2,
+            this.width,
+            80,
+            color[this.selection.color]
+        )
+        .setOrigin(0);
 
         const catTitle =
-            addText(
-                this.scene,
+            addText(this.scene,
                 this.width / 2,
+                20 +
+                gameTitle.height +
                 20,
                 'Children\'s Bible Drills',
                 {
@@ -129,26 +165,20 @@ export default class DrillLayout {
             )
             .setOrigin(0.5, 0);
 
-        const gameTitle =
-            addText(
-                this.scene,
-                this.width / 2,
-                20 +
-                catTitle.height +
-                20,
-                'Bible Drills Practice',
-                {
-                    fontSize: '50px',
-                    color: '#ffffff'
-                }
-            )
-            .setOrigin(0.5, 0);
+        this.scene.add.rectangle(
+            0,
+            catTitle.y + catTitle.height,
+            this.width,
+            80,
+            0x333333
+        )
+        .setOrigin(0);
 
         const drillOptions = addText(
             this.scene,
             this.width / 2,
-            gameTitle.y +
-            gameTitle.height +
+            catTitle.y +
+            catTitle.height +
             20,
             this.callData.text +
             ': ' +
