@@ -78,18 +78,18 @@ export default class ChildrenScene extends Phaser.Scene {
     }
 
     createHeader() {
-        this.add.rectangle(
+        const banner = this.add.rectangle(
             0,
             0,
             this.width,
             80,
-            0xffff00
+            0xffffff
         )
         .setOrigin(0);
 
          const gameTitle = addText(this,
-            this.width / 2,
-            40,
+            banner.x + banner.width / 2,
+            banner.y + banner.height / 2,
             'Bible Drills Practice',
             {
                 fontSize: '50px',

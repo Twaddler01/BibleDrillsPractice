@@ -113,28 +113,27 @@ export default class DrillLayout {
     // ==================================================
     // HEADER
     // ==================================================
-// wip use rect as coord
+
     createHeader() {
-        this.scene.add.rectangle(
+        const banner = this.scene.add.rectangle(
             0,
             0,
             this.width,
             80,
-            0xffff00
+            0xffffff
         )
         .setOrigin(0);
 
-        const gameTitle =
-            addText(this.scene,
-                this.width / 2,
-                40,
-                'Bible Drills Practice',
-                {
-                    fontSize: '50px',
-                    color: '#000000'
-                }
-            )
-            .setOrigin(0.5, 0.5);
+         const gameTitle = addText(this.scene,
+            banner.x + banner.width / 2,
+            banner.y + banner.height / 2,
+            'Bible Drills Practice',
+            {
+                fontSize: '50px',
+                color: '#000000'
+            }
+        )
+        .setOrigin(0.5, 0.5);
 
         const color = {
             red: 0xff0000,
@@ -142,9 +141,9 @@ export default class DrillLayout {
             blue: 0x0000ff
         };
 
-        this.scene.add.rectangle(
+        const catBox = this.scene.add.rectangle(
             0,
-            gameTitle.y * 2,
+            banner.height,
             this.width,
             80,
             color[this.selection.color]
@@ -154,20 +153,18 @@ export default class DrillLayout {
         const catTitle =
             addText(this.scene,
                 this.width / 2,
-                20 +
-                gameTitle.height +
-                20,
+                catBox.y + catBox.height / 2,
                 'Children\'s Bible Drills',
                 {
                     fontSize: '50px',
                     color: '#ffffff'
                 }
             )
-            .setOrigin(0.5, 0);
+            .setOrigin(0.5, 0.5);
 
-        this.scene.add.rectangle(
+        const drillBox = this.scene.add.rectangle(
             0,
-            catTitle.y + catTitle.height,
+            catBox.y + catBox.height,
             this.width,
             80,
             0x333333
@@ -177,9 +174,8 @@ export default class DrillLayout {
         const drillOptions = addText(
             this.scene,
             this.width / 2,
-            catTitle.y +
-            catTitle.height +
-            20,
+            drillBox.y +
+            drillBox.height / 2,
             this.callData.text +
             ': ' +
             this.versionData.text,
@@ -188,7 +184,7 @@ export default class DrillLayout {
                 color: '#ffffff'
             }
         )
-        .setOrigin(0.5, 0);
+        .setOrigin(0.5, 0.5);
         
         // TIMER
         this.timerButton =
