@@ -6,6 +6,10 @@ export default class ChildrenScene extends Phaser.Scene {
     constructor() {
         super('ChildrenScene');
 
+    }
+
+    create() {
+
         this.currentY = 0;
 
         // UI references
@@ -19,9 +23,6 @@ export default class ChildrenScene extends Phaser.Scene {
             color: null,
             call: null
         };
-    }
-
-    create() {
 
         this.width = this.scale.width;
         this.height = this.scale.height;
@@ -69,7 +70,7 @@ export default class ChildrenScene extends Phaser.Scene {
         .setOrigin(0.5, 0);
         
         this.currentY = gameTitle.y + gameTitle.height + 40;
-
+jp(this.selection);
     }
 
     // ==================================================
@@ -434,13 +435,22 @@ export default class ChildrenScene extends Phaser.Scene {
     }
 
     updateGoButton() {
-        if (this.isSelectionComplete()) {
-            this.goButton.setVisible(true);
-            this.goButtonText.setVisible(true);
+        const enabled =
+            this.isSelectionComplete();
+    
+        this.goButton.setFillStyle(
+            enabled ? 0x008000 : 0x333333
+        );
+        
+        this.goButtonText.setColor(
+            enabled ? '#ffffff' : '#666666'
+        );
+    
+        if (enabled) {
+            this.goButton.setInteractive();
         }
         else {
-            this.goButton.setVisible(false);
-            this.goButtonText.setVisible(false);
+            this.goButton.disableInteractive();
         }
     }
 

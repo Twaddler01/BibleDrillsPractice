@@ -32,7 +32,22 @@ export default class DialogWarn {
     // ==================================================
 
     create() {
-    
+
+        // INPUT BLOCKER
+        const blocker = this.addElement(
+            this.scene.add.rectangle(
+                this.width / 2,
+                this.height / 2,
+                this.width,
+                this.height,
+                0x000000,
+                0.7
+            )
+            .setOrigin(0.5)
+            .setInteractive()
+        );
+        blocker.setDepth(99);
+
         const boxW = this.width - 80;
         const boxX = this.width / 2;
         const boxY = this.height / 2;

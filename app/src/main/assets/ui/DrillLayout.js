@@ -11,10 +11,10 @@ export default class DrillLayout {
 
         // Get update method/delta for every scene (Timer)
         this.updateHandler = this.update.bind(this);
-        this.scene.events.on(
-            'update',
-            this.updateHandler
-        );
+        this.shutdownHandler = this.destroy.bind(this);
+        
+        this.scene.events.on('update', this.updateHandler);
+        this.scene.events.once('shutdown', this.shutdownHandler);
 
         // ==================================================
         // OPTIONS
@@ -491,8 +491,12 @@ export default class DrillLayout {
             this.timer = null;
         }
         this.scene.events.off(
-                'update',
-                this.updateHandler
-            );
+            'update',
+            this.updateHandler
+        );
+        this.scene.events.off(
+            'shutdown',
+            this.shutdownHandler
+        );
     }
 }
