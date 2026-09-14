@@ -224,8 +224,8 @@ export default class DrillLayout {
 
     createButtons() {
 
-        const buttonWidth = 260;
-        const buttonHeight = 60;
+        const buttonWidth = 160;
+        const buttonHeight = 40;
 
         // --------------------------------------------------
         // RESET DRILL
@@ -257,7 +257,7 @@ export default class DrillLayout {
             buttonHeight / 2,
             'RESET DRILL',
             {
-                fontSize: '32px',
+                fontSize: '24px',
                 color: '#ffffff'
             }
         )
@@ -294,7 +294,7 @@ export default class DrillLayout {
             buttonHeight / 2,
             'START OVER',
             {
-                fontSize: '32px',
+                fontSize: '24px',
                 color: '#ffffff'
             }
         )

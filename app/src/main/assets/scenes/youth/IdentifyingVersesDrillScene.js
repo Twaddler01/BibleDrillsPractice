@@ -86,7 +86,7 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
                 startY,
                 '',
                 {
-                    fontSize: '48px',
+                    fontSize: '36px',
                     color: '#aaaaaa'
                 }
             )
@@ -102,8 +102,8 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
             this.add.rectangle(
                 centerX,
                 this.currentY,
-                360,
-                80,
+                300,
+                50,
                 0x555555
             )
             .setOrigin(0.5)
@@ -116,7 +116,7 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
                 this.showAnswerButton.y,
                 'HIDE ANSWER',
                 {
-                    fontSize: '40px',
+                    fontSize: '28px',
                     color: '#ffffff'
                 }
             )
@@ -137,10 +137,10 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
 
         this.previousButton =
             this.add.rectangle(
-                centerX - 250,
+                centerX - 220,
                 this.showAnswerButton.y,
                 120,
-                70,
+                50,
                 0x555555
             )
             .setOrigin(0.5)
@@ -171,10 +171,10 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
 
         this.nextButton =
             this.add.rectangle(
-                centerX + 250,
+                centerX + 220,
                 this.showAnswerButton.y,
                 120,
-                70,
+                50,
                 0x555555
             )
             .setOrigin(0.5)
