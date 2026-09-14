@@ -154,7 +154,7 @@ export default class DrillLayout {
             addText(this.scene,
                 this.width / 2,
                 catBox.y + catBox.height / 2,
-                'Children\'s Bible Drills',
+                this.selection.groupText + 'Bible Drills',
                 {
                     fontSize: '50px',
                     color: '#ffffff'

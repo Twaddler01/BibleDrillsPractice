@@ -1,5 +1,26 @@
 // ../data/data.js
 
+export function versionData() {
+    return [
+        {
+            id: 'kjv',
+            text: 'KJV'
+        },
+        {
+            id: 'csb',
+            text: 'CSB'
+        }
+    ];
+}
+
+export function colors() {
+    return [
+        { id: 'red', text: 'Red' },
+        { id: "green", text: 'Green' },
+        { id: 'blue', text: 'Blue' }
+    ];
+}
+
 export function callData() {
     return [
         // Children
@@ -48,20 +69,6 @@ export function callData() {
             id: 'bookDrill',
             text: 'Book Drill',
             group: 'youth'
-        }
-    ];
-}
-
-
-export function versionData() {
-    return [
-        {
-            id: 'kjv',
-            text: 'KJV'
-        },
-        {
-            id: 'csb',
-            text: 'CSB'
         }
     ];
 }
@@ -154,13 +161,9 @@ export function getBooks(section) {
     ];
 }
 
-export function colors() {
-    return [
-        { id: 'red', text: 'Red' },
-        { id: "green", text: 'Green' },
-        { id: 'blue', text: 'Blue' }
-    ];
-}
+// ==================================================
+// CHILDREN DATA
+// ==================================================
 
 export function childrenVersesData() {
     return [
@@ -1369,5 +1372,84 @@ export function childrenKeyPassagesData() {
         "ref": "Ephesians 6:10-20",
         "color": "red"
       }
+    ];
+}
+
+// ==================================================
+// YOUTH DATA
+// ==================================================
+
+export function youth_IdentifyingVerses() {
+    return [
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...then ye shall be a peculiar treasure...',
+            answer: 'Now therefore, if ye will obey my voice indeed, and keep my covenant, then ye shall be a peculiar treasure unto me above all people: for all the earth is mine:',
+            ref: 'Exodus 19:5'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...Trust in him at all times...',
+            answer: 'Trust in him at all times; ye people, pour out your heart before him: God is a refuge for us. Selah.',
+            ref: 'Psalm 62:8'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...I will put my law in their inward parts...',
+            answer: 'But this shall be the covenant that I will make with the house of Israel; After those days, saith the Lord, I will put my law in their inward parts, and write it in their hearts; and will be their God, and they shall be my people.',
+            ref: 'Jeremiah 31:33'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...Take no thought for your life...',
+            answer: 'And he said unto his disciples, Therefore I say unto you, Take no thought for your life, what ye shall eat; neither for the body, what ye shall put on. The life is more than meat, and the body is more than raiment.',
+            ref: 'Luke 12:22-23'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...I am the resurrection, and the life...',
+            answer: 'Jesus said unto her, I am the resurrection, and the life: he that believeth in me, though he were dead, yet shall he live:',
+            ref: 'John 11:25'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...Therefore, my beloved brethren, be ye stedfast...',
+            answer: 'Therefore, my beloved brethren, be ye stedfast, unmoveable, always abounding in the work of the Lord, forasmuch as ye know that your labour is not in vain in the Lord.',
+            ref: '1 Corinthians 15:58'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...against such there is no law...',
+            answer: 'But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith, Meekness, temperance: against such there is no law.',
+            ref: 'Galatians 5:22-23'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...Let this mind be in you, which was also in Christ Jesus...',
+            answer: 'Let this mind be in you, which was also in Christ Jesus: Who, being in the form of God, thought it not robbery to be equal with God: But made himself of no reputation, and took upon him the form of a servant, and was made in the likeness of men.',
+            ref: 'Philippians 2:5-7'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...seek those things which are above...',
+            answer: 'If ye then be risen with Christ, seek those things which are above, where Christ sitteth on the right hand of God. Set your affection on things above, not on things on the earth.',
+            ref: 'Colossians 3:1-2'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            verse_ul: '...But let us, who are of the day...',
+            answer: 'But let us, who are of the day, be sober, putting on the breastplate of faith and love; and for an helmet, the hope of salvation. For God hath not appointed us to wrath, but to obtain salvation by our Lord Jesus Christ,',
+            ref: '1 Thessalonians 5:8-9'
+        },
     ];
 }

@@ -3,6 +3,14 @@ export default class BootScene extends Phaser.Scene {
 
     constructor() {
         super('BootScene');
+
+        // Actual selections
+        this.selection = {
+            groupText: null,
+            version: null,
+            color: null,
+            call: null
+        };
     }
 
     create() {
@@ -73,8 +81,20 @@ export default class BootScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true });
 
         childrenButton.on('pointerdown', () => {
-            this.scene.start('ChildrenScene');
+            this.selection.groupText = 'Children\'s ';
+            this.scene.start('ChildrenScene', this.selection);
         });
+
+        addText(this,
+            this.width / 2,
+            childrenButton.y + childrenButton.height / 2 + 10,
+            'Grades 4, 5 and 6',
+            {
+                fontSize: '24px',
+                color: '#ffffff',
+            }
+        )
+        .setOrigin(0.5, 0);
 
         // Youth button
         const youthButton = addText(
@@ -96,7 +116,19 @@ export default class BootScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true });
 
         youthButton.on('pointerdown', () => {
-            this.scene.start('YouthScene');
+            this.selection.groupText = 'Youth ';
+            this.scene.start('YouthScene', this.selection);
         });
+
+        addText(this,
+            this.width / 2,
+            youthButton.y + youthButton.height / 2 + 10,
+            'Grades 7, 8 and 9',
+            {
+                fontSize: '24px',
+                color: '#ffffff',
+            }
+        )
+        .setOrigin(0.5, 0);
     }
 }

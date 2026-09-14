@@ -239,6 +239,7 @@ export default class QuotationCallScene extends Phaser.Scene {
                     }
                 }
             )
+            .setOrigin(0);
 
     }
 

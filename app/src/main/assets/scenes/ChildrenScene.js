@@ -8,6 +8,10 @@ export default class ChildrenScene extends Phaser.Scene {
 
     }
 
+    init(selection) {
+        this.selection = selection;
+    }
+
     create() {
 
         this.currentY = 0;
@@ -16,13 +20,6 @@ export default class ChildrenScene extends Phaser.Scene {
         this.versionUI = {};
         this.colorUI = {};
         this.callUI = {};
-
-        // Actual selections
-        this.selection = {
-            version: null,
-            color: null,
-            call: null
-        };
 
         this.width = this.scale.width;
         this.height = this.scale.height;
@@ -72,7 +69,9 @@ export default class ChildrenScene extends Phaser.Scene {
             button.on(
                 'pointerdown',
                 () => {
-                    this.scene.start('YouthScene');
+                    this.selection = {};
+                    this.selection.groupText = 'Youth ';
+                    this.scene.start('YouthScene', this.selection);
                 }
             );
     }
