@@ -59,7 +59,7 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
         
                     onStartOver: () => {
                         this.scene.stop();
-                        this.scene.start('YouthScene');
+                        this.scene.start('ChildrenScene');
                     }
                 }
             );
