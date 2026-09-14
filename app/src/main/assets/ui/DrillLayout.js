@@ -29,7 +29,19 @@ export default class DrillLayout {
         this.onStartOver =
             options.onStartOver ??
             (() => {});
-            
+
+        this.getDrillData =
+            options.getDrillData ??
+            (() => []);
+        
+        this.createContent =
+            options.createContent ??
+            (() => {});
+        
+        this.updateContent =
+            options.updateContent ??
+            (() => {});
+
         this.bottomY = 0;
 
         // ==================================================
@@ -49,6 +61,10 @@ export default class DrillLayout {
         // ==================================================
         // DATA
         // ==================================================
+
+        this.drillData = [];
+        this.currentIndex = 0;
+        this.showAnswer = false;
 
         this.callData = null;
         this.versionData = null;
@@ -83,10 +99,28 @@ export default class DrillLayout {
         this.getSelectionData();
         this.createHeader();
         this.createButtons();
+    
         this.contentY =
             this.resetDrillButton.y +
             this.resetDrillButton.height +
             40;
+    
+        this.createDrillControls();
+    }
+
+    start() {
+        this.drillData =
+            this.getDrillData();
+    
+        Phaser.Utils.Array.Shuffle(
+            this.drillData
+        );
+    
+        this.currentIndex = 0;
+        this.showAnswer = false;
+    
+        this.createContent();
+        this.updateDrill();
     }
 
     // ==================================================
@@ -94,7 +128,6 @@ export default class DrillLayout {
     // ==================================================
 
     getSelectionData() {
-
         this.callData =
             data.callData().find(
                 i =>
@@ -308,6 +341,219 @@ export default class DrillLayout {
         );
     }
 
+    createDrillControls() {
+    
+        const centerX = this.width / 2;
+    
+        const startY =
+            this.contentY + 40;
+    
+        // ==================================================
+        // PROGRESS
+        // ==================================================
+    
+        this.progressText =
+            addText(
+                this.scene,
+                centerX,
+                startY,
+                '',
+                {
+                    fontSize: '36px',
+                    color: '#aaaaaa'
+                }
+            )
+            .setOrigin(0.5);
+    
+        const buttonY =
+            startY +
+            this.progressText.height +
+            40;
+    
+        // ==================================================
+        // SHOW ANSWER
+        // ==================================================
+    
+        this.showAnswerButton =
+            this.scene.add.rectangle(
+                centerX,
+                buttonY,
+                300,
+                50,
+                0x555555
+            )
+            .setOrigin(0.5)
+            .setInteractive();
+    
+        this.showAnswerButtonText =
+            addText(
+                this.scene,
+                centerX,
+                buttonY,
+                'SHOW ANSWER',
+                {
+                    fontSize: '28px',
+                    color: '#ffffff'
+                }
+            )
+            .setOrigin(0.5);
+    
+        this.showAnswerButton.on(
+            'pointerdown',
+            () => {
+                this.toggleAnswer();
+            }
+        );
+    
+        // ==================================================
+        // PREVIOUS
+        // ==================================================
+    
+        this.previousButton =
+            this.scene.add.rectangle(
+                centerX - 220,
+                buttonY,
+                120,
+                50,
+                0x555555
+            )
+            .setOrigin(0.5)
+            .setInteractive();
+    
+        addText(
+            this.scene,
+            this.previousButton.x,
+            buttonY,
+            '<--',
+            {
+                fontSize: '32px',
+                color: '#ffffff'
+            }
+        )
+        .setOrigin(0.5);
+    
+        this.previousButton.on(
+            'pointerdown',
+            () => {
+                this.previousDrill();
+            }
+        );
+    
+        // ==================================================
+        // NEXT
+        // ==================================================
+    
+        this.nextButton =
+            this.scene.add.rectangle(
+                centerX + 220,
+                buttonY,
+                120,
+                50,
+                0x555555
+            )
+            .setOrigin(0.5)
+            .setInteractive();
+    
+        addText(
+            this.scene,
+            this.nextButton.x,
+            buttonY,
+            '-->',
+            {
+                fontSize: '32px',
+                color: '#ffffff'
+            }
+        )
+        .setOrigin(0.5);
+    
+        this.nextButton.on(
+            'pointerdown',
+            () => {
+                this.nextDrill();
+            }
+        );
+    
+        this.bottomY =
+            buttonY +
+            this.showAnswerButton.height / 2 +
+            40;
+    }
+
+    updateDrill() {
+        const currentDrill =
+            this.drillData[
+                this.currentIndex
+            ];
+    
+        if (!currentDrill) {
+            return;
+        }
+    
+        // Progress
+        this.progressText.setText(
+            `${this.currentIndex + 1} / ${this.drillData.length}`
+        );
+    
+        // Answer visibility
+        this.showAnswerButtonText.setText(
+            this.showAnswer
+                ? 'HIDE ANSWER'
+                : 'SHOW ANSWER'
+        );
+    
+        // Navigation
+        this.previousButton.setAlpha(
+            this.currentIndex > 0
+                ? 1
+                : 0.4
+        );
+    
+        this.nextButton.setAlpha(
+            this.currentIndex <
+            this.drillData.length - 1
+                ? 1
+                : 0.4
+        );
+    
+        // Let the scene deal with the actual content
+        this.updateContent(
+            currentDrill,
+            this.showAnswer
+        );
+    }
+
+    previousDrill() {
+        if (this.currentIndex <= 0) {
+            return;
+        }
+    
+        this.currentIndex--;
+        this.showAnswer = false;
+    
+        this.updateDrill();
+    }
+    
+    nextDrill() {
+        if (
+            this.currentIndex >=
+            this.drillData.length - 1
+        ) {
+            return;
+        }
+    
+        this.currentIndex++;
+        this.showAnswer = false;
+    
+        this.updateDrill();
+    }
+    
+    toggleAnswer() {
+        this.showAnswer =
+            !this.showAnswer;
+    
+        this.updateDrill();
+    }
+
     // ==================================================
     // HEADER BOTTOM
     // ==================================================
@@ -384,7 +630,22 @@ export default class DrillLayout {
             this.resetDialog = null;
         }
 
-        this.onReset();
+        //this.onReset();
+        ////
+
+        this.drillData =
+            this.getDrillData();
+    
+        Phaser.Utils.Array.Shuffle(
+            this.drillData
+        );
+    
+        this.currentIndex = 0;
+        this.showAnswer = false;
+    
+        this.updateDrill();
+        
+        ////
 
         this.resetDrillButton.setInteractive();
     }
