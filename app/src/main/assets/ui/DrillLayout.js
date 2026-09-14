@@ -111,6 +111,8 @@ export default class DrillLayout {
     start() {
         this.drillData =
             this.getDrillData();
+        
+        if (!this.drillData) return;
     
         Phaser.Utils.Array.Shuffle(
             this.drillData
@@ -342,7 +344,6 @@ export default class DrillLayout {
     }
 
     createDrillControls() {
-    
         const centerX = this.width / 2;
     
         const startY =

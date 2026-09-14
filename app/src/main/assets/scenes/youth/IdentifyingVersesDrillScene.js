@@ -73,9 +73,7 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
                 }
             );
         
-        // Layout now exists
         this.drillLayout.start();
-
     }
 
     createDrillUI() {
