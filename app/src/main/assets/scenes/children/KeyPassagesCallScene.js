@@ -7,25 +7,10 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
 
     constructor() {
         super('KeyPassagesCallScene');
-        
-        this.currentY = 0;
-        
-        this.drillData = [];
-        this.currentIndex = 0;
 
-        // Hide initially.
-        this.showAnswer = false;
-        
         // UI
         this.passagesQuestionText = null;
         this.passagesAnswerText = null;
-        this.progressText = null;
-
-        this.showAnswerButton = null;
-        this.showAnswerButtonText = null;
-
-        this.previousButton = null;
-        this.nextButton = null;
     }
 
     init(selection) {
@@ -33,10 +18,10 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
     }
 
     create() {
-
+    
         this.width = this.scale.width;
         this.height = this.scale.height;
-
+    
         this.add.rectangle(
             0,
             0,
@@ -45,343 +30,91 @@ export default class KeyPassagesCallScene extends Phaser.Scene {
             0x111111
         )
         .setOrigin(0);
-
+    
         this.drillLayout =
             new DrillLayout(
                 this,
                 {
                     selection: this.selection,
         
-                    onReset: () => {
-                        this.resetDrill();
+                    getDrillData: () => {
+                        return data
+                            .childrenKeyPassagesData()
+                            .filter(i => i.color = this.selection.color);
+                    },
+        
+                    createContent: () => {
+                        this.createDrillUI();
+                    },
+        
+                    updateContent: (
+                        currentDrill,
+                        showAnswer
+                    ) => {
+                        this.updateDrillUI(
+                            currentDrill,
+                            showAnswer
+                        );
                     },
         
                     onStartOver: () => {
                         this.scene.stop();
-                        this.scene.start('ChildrenScene');
+                        this.scene.start('YouthScene');
                     }
                 }
             );
-
-        this.startKeyPassagesCall();
+        
+        this.drillLayout.start();
     }
 
-    // ==================================================
-    // DRILL UI
-    // ==================================================
-
     createDrillUI() {
-
-        const centerX =
-            this.width / 2;
-
         const startY =
-            this.drillLayout.bottomY + 80;
-
-        // ==================================================
-        // PROGRESS
-        // ==================================================
-
-        this.progressText =
-            addText(
-                this,
-                centerX,
-                startY,
-                '0 / 0',
-                {
-                    fontSize: '48px',
-                    color: '#aaaaaa'
-                }
-            )
-            .setOrigin(0.5);
-        
-        this.currentY = startY + this.progressText.height + 40;
-
-        // ==================================================
-        // SHOW ANSWER
-        // ==================================================
-
-        this.showAnswerButton =
-            this.add.rectangle(
-                centerX,
-                this.currentY,
-                360,
-                80,
-                0x555555
-            )
-            .setOrigin(0.5)
-            .setInteractive();
-
-        this.showAnswerButtonText =
-            addText(
-                this,
-                centerX,
-                this.showAnswerButton.y,
-                'SHOW ANSWER',
-                {
-                    fontSize: '40px',
-                    color: '#ffffff'
-                }
-            )
-            .setOrigin(0.5);
-
-        this.showAnswerButton.on(
-            'pointerdown',
-            () => {
-                this.toggleAnswer();
-            }
-        );
-        
-        this.currentY = this.showAnswerButton.y + this.showAnswerButton.height * 2 + 40;
-
-        // ==================================================
-        // PREVIOUS
-        // ==================================================
-
-        this.previousButton =
-            this.add.rectangle(
-                centerX - 250,
-                this.showAnswerButton.y,
-                120,
-                70,
-                0x555555
-            )
-            .setOrigin(0.5)
-            .setInteractive();
-
-        addText(
-            this,
-            this.previousButton.x,
-            this.previousButton.y,
-            '<--',
-            {
-                fontSize: '32px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5);
-
-        this.previousButton.on(
-            'pointerdown',
-            () => {
-                this.previousDrill();
-            }
-        );
-
-        // ==================================================
-        // NEXT
-        // ==================================================
-
-        this.nextButton =
-            this.add.rectangle(
-                centerX + 250,
-                this.showAnswerButton.y,
-                120,
-                70,
-                0x555555
-            )
-            .setOrigin(0.5)
-            .setInteractive();
-
-        addText(
-            this,
-            this.nextButton.x,
-            this.nextButton.y,
-            '-->',
-            {
-                fontSize: '32px',
-                color: '#ffffff'
-            }
-        )
-        .setOrigin(0.5);
-
-        this.nextButton.on(
-            'pointerdown',
-            () => {
-                this.nextDrill();
-            }
-        );
-        
-        this.currentY = this.showAnswerButton.y + this.showAnswerButton.height / 2 + 40;
-
-        // Drill area
+            this.drillLayout.bottomY;
+    
         this.passagesQuestionText =
             addText(
                 this,
                 20,
-                this.currentY,
-                'QUESTION',
+                startY,
+                '',
                 {
-                    fontSize: '36px',
+                    fontSize: '30px',
                     color: '#ffffff',
-
                     wordWrap: {
-                        width:
-                            this.width - 40
+                        width: this.width - 40
                     }
                 }
             )
             .setOrigin(0);
-
+    
         this.passagesAnswerText =
             addText(
                 this,
                 20,
-                this.currentY + this.passagesQuestionText.height + 40,
-                'ANSWER',
+                startY + 80,
+                '',
                 {
-                    fontSize: '36px',
+                    fontSize: '30px',
                     color: '#ffff00',
-
                     wordWrap: {
-                        width:
-                            this.width - 40
+                        width: this.width - 40
                     }
                 }
             )
-
+            .setOrigin(0);
     }
 
-    startKeyPassagesCall() {
-        // Color only
-        this.drillData = data.childrenKeyPassagesData().filter(i => i.color = this.selection.color);
-        
-        this.createDrillUI();
-        this.resetDrill();
-    }
-    
-    updateDrillUI() {
-        const currentDrill =
-            this.drillData[
-                this.currentIndex
-            ];
-
-        if (!currentDrill) {
-            return;
-        }
-
-        // ==================================================
-        // PROGRESS
-        // ==================================================
-
-        this.progressText.setText(
-            `${this.currentIndex + 1} / ${this.drillData.length}`
-        );
-
-        // ==================================================
-        // QUESTION
-        // ==================================================
-
+    updateDrillUI(currentDrill, showAnswer) {
         this.passagesQuestionText.setText(
             currentDrill.name
         );
-
-        // ==================================================
-        // ANSWER
-        // ==================================================
-
+    
         this.passagesAnswerText.setText(
             currentDrill.ref
         );
-
-        // ==================================================
-        // ANSWER VISIBILITY
-        // ==================================================
-
+    
         this.passagesAnswerText.setVisible(
-            this.showAnswer
+            showAnswer
         );
-
-        this.showAnswerButtonText.setText(
-            this.showAnswer
-                ? 'HIDE ANSWER'
-                : 'SHOW ANSWER'
-        );
-
-        // ==================================================
-        // NAVIGATION
-        // ==================================================
-
-        this.previousButton.setAlpha(
-            this.currentIndex > 0
-                ? 1
-                : 0.4
-        );
-
-        this.nextButton.setAlpha(
-            this.currentIndex <
-            this.drillData.length - 1
-                ? 1
-                : 0.4
-        );
-    }
-
-    // ==================================================
-    // TOGGLE ANSWER
-    // ==================================================
-
-    toggleAnswer() {
-        this.showAnswer =
-            !this.showAnswer;
-        this.updateDrillUI();
-    }
-
-    // ==================================================
-    // PREVIOUS
-    // ==================================================
-
-    previousDrill() {
-        if (
-            this.currentIndex <= 0
-        ) {
-            return;
-        }
-
-        this.currentIndex--;
-        this.showAnswer = false;
-        this.updateDrillUI();
-    }
-
-    // ==================================================
-    // NEXT
-    // ==================================================
-
-    nextDrill() {
-        if (
-            this.currentIndex >=
-            this.drillData.length - 1
-        ) {
-            return;
-        }
-
-        this.currentIndex++;
-        this.showAnswer = false;
-        this.updateDrillUI();
-    }
-
-    resetDrill() {
-
-        // --------------------------------------------------
-        // SHUFFLE
-        // --------------------------------------------------
-
-        Phaser.Utils.Array.Shuffle(
-            this.drillData
-        );
-
-        // --------------------------------------------------
-        // RESET STATE
-        // --------------------------------------------------
-
-        this.currentIndex = 0;
-
-        // Hide initially.
-        this.showAnswer = false;
-
-        // --------------------------------------------------
-        // UPDATE
-        // --------------------------------------------------
-
-        this.updateDrillUI();
     }
 }
