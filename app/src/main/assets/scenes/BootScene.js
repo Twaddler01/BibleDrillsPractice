@@ -4,7 +4,7 @@ export default class BootScene extends Phaser.Scene {
     constructor() {
         super('BootScene');
 
-        // Actual selections
+        // Selections
         this.selection = {
             groupText: null,
             version: null,

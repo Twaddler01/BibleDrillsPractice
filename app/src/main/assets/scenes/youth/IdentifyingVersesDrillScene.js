@@ -67,8 +67,7 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
                     },
         
                     onStartOver: () => {
-                        this.scene.stop();
-                        this.scene.start('YouthScene');
+                        this.scene.start('YouthScene', this.selection);
                     }
                 }
             );

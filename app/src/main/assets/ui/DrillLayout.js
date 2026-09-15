@@ -631,9 +631,6 @@ export default class DrillLayout {
             this.resetDialog = null;
         }
 
-        //this.onReset();
-        ////
-
         this.drillData =
             this.getDrillData();
     
@@ -645,8 +642,6 @@ export default class DrillLayout {
         this.showAnswer = false;
     
         this.updateDrill();
-        
-        ////
 
         this.resetDrillButton.setInteractive();
     }

@@ -9,7 +9,12 @@ export default class YouthScene extends Phaser.Scene {
     }
 
     init(selection) {
-        this.selection = selection;
+        this.selection = {
+            groupText: selection.groupText ?? null,
+            version: selection.version ?? null,
+            color: selection.color ?? null,
+            call: null
+        };
     }
 
     create() {
@@ -39,6 +44,15 @@ export default class YouthScene extends Phaser.Scene {
         this.selectColorUI();
         this.practiceTypeUI();
         this.createGoButton();
+
+        if (this.selection.version) {
+            this.setVersion(this.selection.version);
+        }
+        
+        if (this.selection.color) {
+            this.setColor(this.selection.color);
+        }
+
         this.createSwitchGroup();
     }
 
@@ -69,7 +83,7 @@ export default class YouthScene extends Phaser.Scene {
             button.on(
                 'pointerdown',
                 () => {
-                    this.selection = {};
+                    this.selection.call = null;
                     this.selection.groupText = 'Children\'s ';
                     this.scene.start('ChildrenScene', this.selection);
                 }

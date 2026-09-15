@@ -61,8 +61,7 @@ export default class QuotationCallScene extends Phaser.Scene {
                     },
         
                     onStartOver: () => {
-                        this.scene.stop();
-                        this.scene.start('ChildrenScene');
+                        this.scene.start('ChildrenScene', this.selection);
                     }
                 }
             );

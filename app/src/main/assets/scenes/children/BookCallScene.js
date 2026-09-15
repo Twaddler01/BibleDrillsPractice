@@ -55,8 +55,7 @@ export default class BookCallScene extends Phaser.Scene {
                     },
         
                     onStartOver: () => {
-                        this.scene.stop();
-                        this.scene.start('ChildrenScene');
+                        this.scene.start('ChildrenScene', this.selection);
                     }
                 }
             );
