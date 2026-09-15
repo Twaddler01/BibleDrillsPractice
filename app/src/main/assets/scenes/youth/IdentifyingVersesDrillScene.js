@@ -1,4 +1,4 @@
-// ./scenes/youth/IdentifyingVersesDrillScene.js.js
+// ./scenes/youth/IdentifyingVersesDrillScene.js
 import * as data from '../../data/data.js';
 import DrillLayout from '../../ui/DrillLayout.js';
 
@@ -6,16 +6,11 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
 
     constructor() {
         super('IdentifyingVersesDrillScene');
-        
-        this.currentY = 0;
 
-        this.drillData = [];
-        this.currentIndex = 0;
-
-        // Hide answer
-        this.showAnswer = false;
-        
         this.drillLayout = null;
+        this.idvQuestionText = null;
+        this.idvAnswerText = null;
+        this.idvAnswerRefText = null;
     }
 
     init(selection) {
@@ -68,7 +63,9 @@ export default class IdentifyingVersesDrillScene extends Phaser.Scene {
         
                     onStartOver: () => {
                         this.scene.start('YouthScene', this.selection);
-                    }
+                    },
+                    
+                    timeInSeconds: 8
                 }
             );
         

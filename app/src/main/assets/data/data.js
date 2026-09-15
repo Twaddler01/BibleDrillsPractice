@@ -1453,3 +1453,111 @@ export function youth_IdentifyingVerses() {
         },
     ];
 }
+
+export function youth_bibleAnswersVerses() {
+    return [
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'AM I ALONE?',
+            answer: 'Have not I commanded thee? Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest.',
+            ref: 'Joshua 1:9'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'WHO SHOULD I TRUST?',
+            answer: 'Trust ye in the Lord for ever: for in the LORD JEHOVAH is everlasting strength:',
+            ref: 'Isaiah 26:4'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'WHAT ARE THE RESULTS OF SEEKING GOOD?',
+            answer: 'Seek good, and not evil, that ye may live: and so the LORD, the God of hosts, shall be with you, as ye have spoken.',
+            ref: 'Amos 5:14'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'WHAT DOES JESUS REQUIRE OF ME?',
+            answer: 'Then said Jesus unto his disciples, If any man will come after me, let him deny himself, and take up his cross, and follow me.',
+            ref: 'Matthew 16:24'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'HOW DID GOD SHOW HIS LOVE TO ME?',
+            answer: 'But God commendeth his love toward us, in that, while we were yet sinners, Christ died for us.',
+            ref: 'Romans 5:8'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'WHO LIVES IN ME?',
+            answer: 'I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me: and the life which I now live in the flesh I live by the faith of the Son of God, who loved me, and gave himself for me.',
+            ref: 'Galatians 2:20'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'WHO DID CHRIST JESUS COME TO SAVE?',
+            answer: 'This is a faithful saying, and worthy of all acceptation, that Christ Jesus came into the world to save sinners; of whom I am chief.',
+            ref: '1 Timothy 1:15'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'HOW CAN I RESIST THE DEVIL?',
+            answer: 'Submit yourselves therefore to God. Resist the devil, and he will flee from you.',
+            ref: 'James 4:7'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'HOW CAN I MINISTER TO OTHERS?',
+            answer: 'As every man hath received the gift, even so minister the same one to another, as good stewards of the manifold grace of God.',
+            ref: '1 Peter 4:10'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'WHO IS JESUS?',
+            answer: 'Whosoever shall confess that Jesus is the Son of God, God dwelleth in him, and he in God.',
+            ref: '1 John 4:15'
+        }
+    ];
+}
+
+export async function getRandomKJVVerse() {
+
+    const response = await fetch(
+        'https://bible-api.com/data/kjv/random'
+    );
+
+    if (!response.ok) {
+        throw new Error(`Bible API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const verseData = [];
+    
+    verseData.push({
+        ref: data.random_verse.book + ' ' + data.random_verse.chapter + ':' + data.random_verse.verse,
+        verse: data.random_verse.text
+    });
+
+    return verseData;
+}
+/*
+const data = await getRandomKJVVerse();
+
+console.log('Text:', data.random_verse.text);
+
+console.log(
+    'Reference:',
+    `${data.random_verse.book} ${data.random_verse.chapter}:${data.random_verse.verse}`
+);
+
+*/

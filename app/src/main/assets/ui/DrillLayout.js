@@ -42,6 +42,11 @@ export default class DrillLayout {
             options.updateContent ??
             (() => {});
 
+        this.timeInSeconds = options.timeInSeconds ?? 10;
+
+        this.getNextDrill =
+            options.getNextDrill ?? null;
+
         this.bottomY = 0;
 
         // ==================================================
@@ -108,9 +113,9 @@ export default class DrillLayout {
         this.createDrillControls();
     }
 
-    start() {
+    async start() {
         this.drillData =
-            this.getDrillData();
+            await this.getDrillData();
         
         if (!this.drillData) return;
     
@@ -455,7 +460,7 @@ export default class DrillLayout {
             .setOrigin(0.5)
             .setInteractive();
     
-        addText(
+        this.nextButtonText = addText(
             this.scene,
             this.nextButton.x,
             buttonY,
@@ -508,13 +513,33 @@ export default class DrillLayout {
                 ? 1
                 : 0.4
         );
-    
-        this.nextButton.setAlpha(
+
+const atEnd =
+    this.currentIndex >=
+    this.drillData.length - 1;
+
+if (atEnd && this.getNextDrill) {
+
+    // Dynamic drill can generate another item
+    this.nextButton.setAlpha(1);
+    this.nextButtonText.setText('NEXT RANDOM VERSE');
+
+} else {
+
+    // Normal navigation
+    this.nextButton.setAlpha(
+        atEnd ? 0.4 : 1
+    );
+
+    this.nextButtonText.setText('-->');
+}
+
+        /*this.nextButton.setAlpha(
             this.currentIndex <
             this.drillData.length - 1
                 ? 1
                 : 0.4
-        );
+        );*/
     
         // Let the scene deal with the actual content
         this.updateContent(
@@ -534,13 +559,33 @@ export default class DrillLayout {
         this.updateDrill();
     }
     
-    nextDrill() {
+    async nextDrill() {
         if (
-            this.currentIndex >=
+            this.currentIndex <
             this.drillData.length - 1
         ) {
+            this.currentIndex++;
+            this.showAnswer = false;
+    
+            this.updateDrill();
+    
             return;
         }
+    
+        // No more existing drills
+        // and this drill does not generate new ones
+        if (!this.getNextDrill) {
+            return;
+        }
+    
+        const newDrill =
+            await this.getNextDrill();
+    
+        if (!newDrill) {
+            return;
+        }
+    
+        this.drillData.push(newDrill);
     
         this.currentIndex++;
         this.showAnswer = false;
@@ -625,18 +670,24 @@ export default class DrillLayout {
     // CONFIRM RESET
     // ==================================================
 
-    confirmResetDrill() {
+    async confirmResetDrill() {
         if (this.resetDialog) {
             this.resetDialog.destroy();
             this.resetDialog = null;
         }
 
         this.drillData =
-            this.getDrillData();
-    
-        Phaser.Utils.Array.Shuffle(
-            this.drillData
-        );
+            await this.getDrillData();
+
+        if (!this.drillData) {
+            return;
+        }
+
+        if (!this.getNextDrill) {
+            Phaser.Utils.Array.Shuffle(
+                this.drillData
+            );
+        }
     
         this.currentIndex = 0;
         this.showAnswer = false;
@@ -731,7 +782,7 @@ export default class DrillLayout {
                 this.scene,
                 {
                     bottomY: this.bottomY,
-                    time: 10,
+                    time: this.timeInSeconds,
                     onClose: () => {
                         this.timer?.destroy();
                         this.timer = null;

@@ -205,54 +205,6 @@ export default class ChildrenScene extends Phaser.Scene {
             buttonH;
     }
 
-
-    /*setVersion(id) {
-        this.selection.version = id;
-    
-        Object.entries(this.versionUI).forEach(
-            ([versionId, ui]) => {
-    
-                const selected =
-                    versionId === id;
-    
-                if (selected) {
-                    ui.bg.setFillStyle(0x008000);
-                    ui.text.setText(`✓ ${ui.data.text}`);
-                    ui.text.setColor('#ffffff');
-                }
-                else {
-                    ui.bg.setFillStyle(0x333333);
-                    ui.text.setText(ui.data.text);
-                    ui.text.setColor('#666666');
-                    ui.bg.disableInteractive();
-                }
-            }
-        );
-        
-        this.changeVersionText = 
-            addText(this,
-                this.changeVersionX + 20,
-                this.changeVersionY - 30 - 15/2,
-                '( EDIT )',
-                {
-                    fontSize: '18px',
-                    color: '#ff0000'
-                }
-            )
-            .setOrigin(0)
-            .setInteractive();
-            
-        this.changeVersionText.on(
-            'pointerdown',
-            () => {
-                this.changeVersionText.destroy();
-                this.resetVersion();
-            }
-        );
-    
-        this.updateGoButton();
-    }
-*/
     setVersion(id) {
         this.setSelection(id, {
             ui: this.versionUI,
@@ -387,21 +339,6 @@ export default class ChildrenScene extends Phaser.Scene {
         return text;
     }
 
-/*
-    resetVersion() {
-        this.selection.version = null;
-        Object.entries(this.versionUI).forEach(
-            ([versionId, ui]) => {
-                ui.bg.setFillStyle(0x555555);
-                ui.bg.setInteractive();
-                ui.text.setText(ui.data.text);
-                ui.text.setColor('#ffffff');
-            }
-        );
-    
-        this.updateGoButton();
-    }
-*/
     // ==================================================
     // COLOR
     // ==================================================
@@ -480,30 +417,7 @@ export default class ChildrenScene extends Phaser.Scene {
 
         this.currentY = currentY + buttonH + 20;
     }
-/*
-    setColor(id) {
-        this.selection.color = id;
-    
-        Object.entries(this.colorUI).forEach(
-            ([colorId, ui]) => {
-    
-                const selected =
-                    colorId === id;
-    
-                if (selected) {
-                    ui.bg.setFillStyle(0x008000);
-                    ui.text.setText(`✓ ${ui.data.text}`);
-                }
-                else {
-                    ui.bg.setFillStyle(0x555555);
-                    ui.text.setText(ui.data.text);
-                }
-            }
-        );
-    
-        this.updateGoButton();
-    }
-*/
+
     // ==================================================
     // PRACTICE TYPE
     // ==================================================
@@ -592,30 +506,7 @@ export default class ChildrenScene extends Phaser.Scene {
             Math.ceil(callData.length / 2) *
             (buttonH + gap);
     }
-/*
-    setCall(id) {
-        this.selection.call = id;
-    
-        Object.entries(this.callUI).forEach(
-            ([callId, ui]) => {
-    
-                const selected =
-                    callId === id;
-    
-                if (selected) {
-                    ui.bg.setFillStyle(0x008000);
-                    ui.text.setText(`✓ ${ui.data.text}`);
-                }
-                else {
-                    ui.bg.setFillStyle(0x555555);
-                    ui.text.setText(ui.data.text);
-                }
-            }
-        );
-    
-        this.updateGoButton();
-    }
-*/
+
     createGoButton() {
         const x = 20;
         const y = this.currentY + 40;
