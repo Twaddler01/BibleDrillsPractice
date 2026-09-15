@@ -47,6 +47,11 @@ export default class DrillLayout {
         this.getNextDrill =
             options.getNextDrill ?? null;
 
+        this.maxDrills =
+            options.maxDrills ?? null;
+
+        this.nextDrillCooldown = false;
+
         this.bottomY = 0;
 
         // ==================================================
@@ -466,7 +471,7 @@ export default class DrillLayout {
             buttonY,
             '-->',
             {
-                fontSize: '32px',
+                fontSize: this.getNextDrill ? '16px' : '32px',
                 color: '#ffffff'
             }
         )
@@ -514,32 +519,41 @@ export default class DrillLayout {
                 : 0.4
         );
 
-const atEnd =
-    this.currentIndex >=
-    this.drillData.length - 1;
+        const atEnd =
+            this.currentIndex >=
+            this.drillData.length - 1;
 
-if (atEnd && this.getNextDrill) {
+        const canGenerate =
+            this.getNextDrill &&
+            (
+                !this.maxDrills ||
+                this.drillData.length < this.maxDrills
+            );
 
-    // Dynamic drill can generate another item
-    this.nextButton.setAlpha(1);
-    this.nextButtonText.setText('NEXT RANDOM VERSE');
+        if (atEnd && this.getNextDrill) {
+        
+            // Dynamic drill can generate another item
+            this.nextButton.setAlpha(
+                canGenerate && !this.nextDrillCooldown ? 1 : 0.4
+            );
+            
+            this.nextButtonText.setPosition(
+                this.nextButton.x,
+                this.nextButton.y
+            );
+            this.nextButtonText.setText(
+                'GET\nRANDOM VERSE'
+            );
 
-} else {
-
-    // Normal navigation
-    this.nextButton.setAlpha(
-        atEnd ? 0.4 : 1
-    );
-
-    this.nextButtonText.setText('-->');
-}
-
-        /*this.nextButton.setAlpha(
-            this.currentIndex <
-            this.drillData.length - 1
-                ? 1
-                : 0.4
-        );*/
+        } else {
+        
+            // Normal navigation
+            this.nextButton.setAlpha(
+                atEnd ? 0.4 : 1
+            );
+        
+            this.nextButtonText.setText('-->');
+        }
     
         // Let the scene deal with the actual content
         this.updateContent(
@@ -558,7 +572,7 @@ if (atEnd && this.getNextDrill) {
     
         this.updateDrill();
     }
-    
+
     async nextDrill() {
         if (
             this.currentIndex <
@@ -571,26 +585,63 @@ if (atEnd && this.getNextDrill) {
     
             return;
         }
-    
+
+        // Maximum number of drills reached
+        if (
+            this.maxDrills &&
+            this.drillData.length >= this.maxDrills
+        ) {
+            return;
+        }
+
         // No more existing drills
         // and this drill does not generate new ones
         if (!this.getNextDrill) {
             return;
         }
-    
-        const newDrill =
-            await this.getNextDrill();
-    
-        if (!newDrill) {
+
+        if (this.nextDrillCooldown) {
             return;
         }
+
+        this.nextDrillCooldown = true;
+
+        this.nextButton.setAlpha(0.4);
+
+        this.scene.time.delayedCall(
+            3000,
+            () => {
+                this.nextDrillCooldown = false;
+                this.updateDrill();
+            }
+        );
     
-        this.drillData.push(newDrill);
+        try {
     
-        this.currentIndex++;
-        this.showAnswer = false;
+            const newDrill =
+                await this.getNextDrill();
     
-        this.updateDrill();
+            if (!newDrill) {
+                return;
+            }
+    
+            this.drillData.push(newDrill);
+    
+            this.currentIndex++;
+            this.showAnswer = false;
+    
+            this.updateDrill();
+    
+        } catch (error) {
+    
+            console.error(
+                'Error generating next drill:',
+                error
+            );
+    
+            // Silently do nothing.
+            // Cooldown still runs for 3 seconds.
+        }
     }
     
     toggleAnswer() {

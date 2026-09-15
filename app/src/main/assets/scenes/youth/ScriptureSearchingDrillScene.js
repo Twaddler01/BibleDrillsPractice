@@ -64,6 +64,8 @@ export default class ScriptureSearchingDrillScene extends Phaser.Scene {
                     getNextDrill: () => {
                         return this.getRandomVerse();
                     },
+                    
+                    maxDrills: 20
                 }
             );
         
