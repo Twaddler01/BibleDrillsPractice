@@ -1529,6 +1529,81 @@ export function youth_bibleAnswersVerses() {
     ];
 }
 
+export function youth_doctrinalVerses() {
+    return [
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'THE LORD’S DAY',
+            answer: 'Remember the sabbath day, to keep it holy.',
+            ref: 'Exodus 20:8'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'EDUCATION',
+            answer: 'Thus saith the LORD, thy Redeemer, the Holy One of Israel; I am the LORD thy God which teacheth thee to profit, which leadeth thee by the way that thou shouldest go.',
+            ref: 'Isaiah 48:17'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'LAST THINGS',
+            answer: 'And this gospel of the kingdom shall be preached in all the world for a witness unto all nations; and then shall the end come.',
+            ref: 'Matthew 24:14'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'GOD',
+            answer: 'And the Word was made flesh, and dwelt among us, (and we beheld his glory, the glory as of the only begotten of the Father,) full of grace and truth.',
+            ref: 'John 1:14'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'RELIGIOUS LIBERTY',
+            answer: 'Then Peter and the other apostles answered and said, We ought to obey God rather than men.',
+            ref: 'Acts 5:29'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'EVANGELISM AND MISSIONS',
+            answer: 'And how shall they preach, except they be sent? as it is written, How beautiful are the feet of them that preach the gospel of peace, and bring glad tidings of good things!',
+            ref: 'Romans 10:15'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'STEWARDSHIP',
+            answer: 'Upon the first day of the week let every one of you lay by him in store, as God hath prospered him, that there be no gatherings when I come.',
+            ref: '1 Corinthians 16:2'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'THE CHURCH',
+            answer: 'Saying, I will declare thy name unto my brethren, in the midst of the church will I sing praise unto thee.',
+            ref: 'Hebrews 2:12'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'GRACE',
+            answer: 'Let us therefore come boldly unto the throne of grace, that we may obtain mercy, and find grace to help in time of need.',
+            ref: 'Hebrews 4:16'
+        },
+        {
+            vers: 'kjv',
+            color: 'red',
+            question: 'SCRIPTURE',
+            answer: 'Knowing this first, that no prophecy of the scripture is of any private interpretation. For the prophecy came not in old time by the will of man: but holy men of God spake as they were moved by the Holy Ghost.',
+            ref: '2 Peter 1:20-21'
+        }
+    ];
+}
+
 export async function getRandomKJVVerse() {
 
     const response = await fetch(
@@ -1561,3 +1636,13 @@ console.log(
 );
 
 */
+
+export function openExternalPage(url) {
+    if (window.Android?.openUrl) {
+        window.Android.openUrl(url);
+        return;
+    }
+
+    // Useful when testing the Phaser app outside Android.
+    //window.open(url, '_blank');
+}

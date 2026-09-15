@@ -65,7 +65,7 @@ export default class ScriptureSearchingDrillScene extends Phaser.Scene {
                         return this.getRandomVerse();
                     },
                     
-                    maxDrills: 20
+                    maxDrills: 10
                 }
             );
         
@@ -75,9 +75,13 @@ export default class ScriptureSearchingDrillScene extends Phaser.Scene {
     async getRandomVerse() {
         const data = await fn.getRandomKJVVerse();
         
+        // Remove any new line characters from API
+        data[0].verse =
+            data[0].verse.replace(/\s*\n\s*/g, ' ');
+
         //console.log(`Ref: ${data[0].ref}`);
         //console.log(`Verse: ${data[0].verse}`);
-        
+
         return data[0];
     }
 

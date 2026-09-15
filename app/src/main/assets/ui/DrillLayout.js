@@ -471,7 +471,7 @@ export default class DrillLayout {
             buttonY,
             '-->',
             {
-                fontSize: this.getNextDrill ? '16px' : '32px',
+                fontSize: '32px',
                 color: '#ffffff'
             }
         )
@@ -483,7 +483,19 @@ export default class DrillLayout {
                 this.nextDrill();
             }
         );
-    
+
+        this.randomText = addText(
+            this.scene,
+            this.nextButton.x,
+            buttonY + this.nextButtonText.height + 20,
+            'Random Verse\n(KJV only)',
+            {
+                fontSize: '16px',
+                color: '#ffffff'
+            }
+        )
+        .setOrigin(0.5);
+
         this.bottomY =
             buttonY +
             this.showAnswerButton.height / 2 +
@@ -529,6 +541,11 @@ export default class DrillLayout {
                 !this.maxDrills ||
                 this.drillData.length < this.maxDrills
             );
+            
+        const maxGenerated =
+            this.getNextDrill &&
+            this.drillData.length >= this.maxDrills;
+            
 
         if (atEnd && this.getNextDrill) {
         
@@ -537,13 +554,7 @@ export default class DrillLayout {
                 canGenerate && !this.nextDrillCooldown ? 1 : 0.4
             );
             
-            this.nextButtonText.setPosition(
-                this.nextButton.x,
-                this.nextButton.y
-            );
-            this.nextButtonText.setText(
-                'GET\nRANDOM VERSE'
-            );
+            this.randomText.setVisible(true);
 
         } else {
         
@@ -551,8 +562,12 @@ export default class DrillLayout {
             this.nextButton.setAlpha(
                 atEnd ? 0.4 : 1
             );
+            
+            this.randomText.setVisible(false);
+        }
         
-            this.nextButtonText.setText('-->');
+        if (maxGenerated) {
+            this.randomText.setText('Reset drill for more...');
         }
     
         // Let the scene deal with the actual content
