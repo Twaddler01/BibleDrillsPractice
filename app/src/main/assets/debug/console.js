@@ -182,23 +182,18 @@ console.header.addEventListener('pointerdown', (event) => {
     dragOffsetX = event.clientX - rect.left;
     dragOffsetY = event.clientY - rect.top;
 
-    console.header.setPointerCapture(event.pointerId);
-
     event.preventDefault();
     event.stopPropagation();
 });
 
-console.header.addEventListener('pointermove', (event) => {
+document.addEventListener('pointermove', (event) => {
 
     if (!isDragging) {
         return;
     }
 
-    const x =
-        event.clientX - dragOffsetX;
-
-    const y =
-        event.clientY - dragOffsetY;
+    const x = event.clientX - dragOffsetX;
+    const y = event.clientY - dragOffsetY;
 
     consoleLog.style.left = `${x}px`;
     consoleLog.style.top = `${y}px`;
@@ -206,10 +201,9 @@ console.header.addEventListener('pointermove', (event) => {
     consoleLog.style.bottom = 'auto';
 
     event.preventDefault();
-    event.stopPropagation();
 });
 
-console.header.addEventListener('pointerup', (event) => {
+document.addEventListener('pointerup', (event) => {
 
     if (!isDragging) {
         return;
@@ -217,15 +211,10 @@ console.header.addEventListener('pointerup', (event) => {
 
     isDragging = false;
 
-    console.header.releasePointerCapture(
-        event.pointerId
-    );
-
     event.preventDefault();
-    event.stopPropagation();
 });
 
-console.header.addEventListener('pointercancel', () => {
+document.addEventListener('pointercancel', () => {
     isDragging = false;
 });
 
