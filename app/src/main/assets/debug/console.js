@@ -126,7 +126,7 @@ document.getElementById('consoleLog').innerHTML = `
             display: inline-block;
             min-width: 8em;
             margin-right: 2em;
-            opacity: 0.66;
+            opacity: 0.8;
         }
     </style>
 `;
@@ -157,6 +157,79 @@ consoleToggle.onclick = () => {
 consoleRefresh.onclick = () => {
     location.reload();
 };
+
+// ------------------------------------------
+// DRAG CONSOLE
+// ------------------------------------------
+
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+console.header = document.querySelector('.console-header');
+
+console.header.addEventListener('pointerdown', (event) => {
+
+    // Don't start dragging when clicking a header button
+    if (event.target.closest('button')) {
+        return;
+    }
+
+    isDragging = true;
+
+    const rect = consoleLog.getBoundingClientRect();
+
+    dragOffsetX = event.clientX - rect.left;
+    dragOffsetY = event.clientY - rect.top;
+
+    console.header.setPointerCapture(event.pointerId);
+
+    event.preventDefault();
+    event.stopPropagation();
+});
+
+console.header.addEventListener('pointermove', (event) => {
+
+    if (!isDragging) {
+        return;
+    }
+
+    const x =
+        event.clientX - dragOffsetX;
+
+    const y =
+        event.clientY - dragOffsetY;
+
+    consoleLog.style.left = `${x}px`;
+    consoleLog.style.top = `${y}px`;
+    consoleLog.style.right = 'auto';
+    consoleLog.style.bottom = 'auto';
+
+    event.preventDefault();
+    event.stopPropagation();
+});
+
+console.header.addEventListener('pointerup', (event) => {
+
+    if (!isDragging) {
+        return;
+    }
+
+    isDragging = false;
+
+    console.header.releasePointerCapture(
+        event.pointerId
+    );
+
+    event.preventDefault();
+    event.stopPropagation();
+});
+
+console.header.addEventListener('pointercancel', () => {
+    isDragging = false;
+});
+
+// Console activity
 
 let consoleDiv = document.getElementById('js-console');
 
@@ -283,11 +356,7 @@ console.render = function(cssClass, items, prefix) {
     // ENTRY HEADER
     // ------------------------------------------
 
-    const logHeader = `
-        <div class="log-header">
-            ───── ${cssClass.toUpperCase()} · ${timestamp} ─────
-        </div>
-    `;
+    const logHeader = ''; // `<span class="log-header">${cssClass.toUpperCase()} · ${timestamp}<br></span>`;
 
     // ------------------------------------------
     // ENTRY
