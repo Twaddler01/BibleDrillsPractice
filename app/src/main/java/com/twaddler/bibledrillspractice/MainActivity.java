@@ -134,7 +134,10 @@ public class MainActivity extends Activity {
     // ==================================================
 
     private void openExternalPage(String url) {
-
+        
+        private static final float POPUP_WIDTH = 0.80f;
+        private static final float POPUP_HEIGHT = 0.80f;
+        
         // Don't create another popup if one is already open.
         if (externalWebView != null) {
             return;
@@ -159,20 +162,19 @@ public class MainActivity extends Activity {
                 Color.WHITE
         );
 
-        int margin = dp(30);
-
+        int popupWidth =
+                (int) (rootLayout.getWidth() * POPUP_WIDTH);
+        
+        int popupHeight =
+                (int) (rootLayout.getHeight() * POPUP_HEIGHT);
+        
         FrameLayout.LayoutParams containerParams =
                 new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
+                        popupWidth,
+                        popupHeight
                 );
-
-        containerParams.setMargins(
-                margin,
-                margin,
-                margin,
-                margin
-        );
+        
+        containerParams.gravity = Gravity.CENTER;
 
         // --------------------------------------------------
         // External WebView
