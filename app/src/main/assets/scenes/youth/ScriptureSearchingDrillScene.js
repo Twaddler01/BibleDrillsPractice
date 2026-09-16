@@ -123,16 +123,38 @@ export default class ScriptureSearchingDrillScene extends Phaser.Scene {
     }
 
     updateDrillUI(currentDrill, showAnswer) {
+        const csb = this.selection.version === 'csb';
+        
         this.refText.setText(
             currentDrill.ref
         );
-    
-        this.verseText.setText(
-            currentDrill.verse
-        );
-    
+
         this.verseText.setVisible(
             showAnswer
+        );
+
+        // Remove previous CSB click handler
+        this.verseText.off('pointerdown');
+
+        if (csb) {
+            const url = 
+                'https://www.biblegateway.com/passage/?search=' +
+                encodeURIComponent(currentDrill.ref) +
+                '&version=CSB';
+            
+            this.verseText.setText('VIEW CSB VERSE');
+            this.verseText.setInteractive();
+            this.verseText.on(
+                'pointerdown',
+                () => {
+                    fn.openExternalPage(url);
+                }
+            );
+            return;
+        }
+
+        this.verseText.setText(
+            currentDrill.verse
         );
     }
 

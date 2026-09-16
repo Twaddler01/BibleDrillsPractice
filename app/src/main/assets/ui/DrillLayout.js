@@ -488,7 +488,7 @@ export default class DrillLayout {
             this.scene,
             this.nextButton.x,
             buttonY + this.nextButtonText.height + 20,
-            'Random Verse\n(KJV only)',
+            'Get Random Verse',
             {
                 fontSize: '16px',
                 color: '#ffffff'
