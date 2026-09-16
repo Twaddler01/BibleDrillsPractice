@@ -1645,9 +1645,3 @@ export function openExternalPage(url) {
 
     window.open(url, '_blank');
 }
-
-openExternalPage(
-    'https://www.biblegateway.com/passage/?search=' +
-    encodeURIComponent(this.currentDrill.ref) +
-    '&version=CSB'
-);
