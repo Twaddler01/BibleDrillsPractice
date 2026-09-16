@@ -24,12 +24,16 @@ export default class Timer {
         this.time =
             this.startTime;
 
+        this.expired = false;
         this.paused = false;
 
         this.elements = [];
 
         this.onClose =
             options.onClose ?? (() => {});
+
+        this.onComplete =
+            options.onComplete ?? (() => {});
 
         this.create();
     }
@@ -278,8 +282,9 @@ export default class Timer {
         if (this.paused)
             return;
 
-        if (this.time <= 0)
+        if (this.time <= 0) {
             return;
+        }
 
         // Phaser delta is milliseconds
         this.time -= delta / 1000;
@@ -290,7 +295,13 @@ export default class Timer {
         this.updateTimeText();
 
         if (this.time <= 0) {
+            this.time = 0;
             this.pause();
+        
+            if (!this.expired) {
+                this.expired = true;
+                this.timeExpired();
+            }
         }
     }
 
@@ -340,6 +351,7 @@ export default class Timer {
 
     reset() {
         this.time = this.startTime;
+        this.expired = false;
         this.paused = false;
         this.pauseText.setText('PAUSE');
         this.updateTimeText();
@@ -386,6 +398,60 @@ export default class Timer {
     
             }
         );
+    }
+
+    // ==================================================
+    // EXPIRED EFFECT
+    // ==================================================
+
+    timeExpired() {
+        this.onComplete();
+
+        const flash =
+            this.scene.add.rectangle(
+                this.width / 2,
+                this.height / 2,
+                this.width,
+                this.height,
+                0xff0000,
+                0.35
+            )
+            .setDepth(200);
+    
+        this.scene.tweens.add({
+            targets: flash,
+            alpha: 0,
+            duration: 800,
+            ease: 'Power2',
+            onComplete: () => {
+                flash.destroy();
+            }
+        });
+
+        const text =
+            this.scene.add.text(
+                this.width / 2,
+                this.height / 2,
+                'TIME!',
+                {
+                    fontSize: '96px',
+                    color: '#ff0000',
+                    fontStyle: 'bold'
+                }
+            )
+            .setOrigin(0.5)
+            .setDepth(201);
+    
+        this.scene.tweens.add({
+            targets: text,
+            scale: 1.3,
+            alpha: 0,
+            duration: 800,
+            ease: 'Power2',
+            onComplete: () => {
+                text.destroy();
+            }
+        });
     }
 
     // ==================================================

@@ -852,6 +852,10 @@ export default class DrillLayout {
                     onClose: () => {
                         this.timer?.destroy();
                         this.timer = null;
+                    },
+                    // Optional callback
+                    onComplete: () => {
+                        //
                     }
                 }
             );
