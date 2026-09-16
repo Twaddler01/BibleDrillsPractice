@@ -27,6 +27,10 @@ public class MainActivity extends Activity {
     private WebView externalWebView;
     private ImageButton externalCloseButton;
 
+    // External popup size
+    private static final float POPUP_WIDTH = 0.80f;
+    private static final float POPUP_HEIGHT = 0.80f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,9 +138,6 @@ public class MainActivity extends Activity {
     // ==================================================
 
     private void openExternalPage(String url) {
-        
-        private static final float POPUP_WIDTH = 0.80f;
-        private static final float POPUP_HEIGHT = 0.80f;
         
         // Don't create another popup if one is already open.
         if (externalWebView != null) {
