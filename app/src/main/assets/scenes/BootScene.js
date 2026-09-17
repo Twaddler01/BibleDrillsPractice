@@ -1,5 +1,4 @@
 // ./scenes/BootScene.js
-import * as fn from '../data/data.js';
 
 export default class BootScene extends Phaser.Scene {
 
@@ -132,12 +131,5 @@ export default class BootScene extends Phaser.Scene {
             }
         )
         .setOrigin(0.5, 0);
-        
-        /*fn.openExternalPage(
-            'https://www.biblegateway.com/passage/?search=' +
-            encodeURIComponent('John 3:16') +
-            '&version=CSB'
-        );*/
-
     }
 }

@@ -1,5 +1,5 @@
 // ./scenes/children/KeyPassagesCallScene.js
-import * as data from '../../data/data.js';
+import * as data from '../../data/childrenData.js';
 import DialogWarn from '../../ui/DialogWarn.js';
 import DrillLayout from '../../ui/DrillLayout.js';
 

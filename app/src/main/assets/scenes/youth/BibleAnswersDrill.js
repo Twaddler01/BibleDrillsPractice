@@ -1,5 +1,5 @@
 // ./scenes/youth/BibleAnswersDrill.js
-import * as data from '../../data/data.js';
+import * as data from '../../data/youthData.js';
 import DrillLayout from '../../ui/DrillLayout.js';
 
 export default class BibleAnswersDrill extends Phaser.Scene {

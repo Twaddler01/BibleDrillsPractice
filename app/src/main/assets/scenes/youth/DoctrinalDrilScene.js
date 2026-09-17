@@ -1,5 +1,5 @@
 // ./scenes/youth/DoctrinalDrilScene.js.js
-import * as data from '../../data/data.js';
+import * as data from '../../data/youthData.js';
 import DialogWarn from '../../ui/DialogWarn.js';
 import DrillLayout from '../../ui/DrillLayout.js';
 

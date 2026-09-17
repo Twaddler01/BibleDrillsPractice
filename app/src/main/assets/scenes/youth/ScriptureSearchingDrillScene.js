@@ -1,5 +1,5 @@
 // ./scenes/youth/ScriptureSearchingDrillScene.js.js
-import * as fn from '../../data/data.js';
+import * as fn from '../../data/functions.js';
 import DrillLayout from '../../ui/DrillLayout.js';
 
 export default class ScriptureSearchingDrillScene extends Phaser.Scene {
