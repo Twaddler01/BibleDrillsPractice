@@ -1,5 +1,6 @@
 // ./scenes/YouthScene.js
 import * as data from '../data/data.js';
+import DialogWarn from '../ui/DialogWarn.js';
 
 export default class YouthScene extends Phaser.Scene {
 
@@ -29,19 +30,12 @@ export default class YouthScene extends Phaser.Scene {
         this.width = this.scale.width;
         this.height = this.scale.height;
 
-        // Complete background
-        this.add.rectangle(
-            0,
-            0,
-            this.width,
-            this.height,
-            0x111111
-        )
-        .setOrigin(0);
-
         this.createHeader();
+        this.createSwitchGroup();
+        
         this.selectVersionUI();
         this.selectColorUI();
+        
         this.practiceTypeUI();
         this.createGoButton();
 
@@ -52,17 +46,15 @@ export default class YouthScene extends Phaser.Scene {
         if (this.selection.color) {
             this.setColor(this.selection.color);
         }
-
-        this.createSwitchGroup();
     }
 
     createSwitchGroup() {
         const button =
             this.add.rectangle(
                 this.width / 2,
-                this.height - 50,
-                this.width / 1.5,
-                60,
+                this.currentY,
+                this.width / 2,
+                40,
                 0x800000
             )
             .setOrigin(0.5)
@@ -83,11 +75,55 @@ export default class YouthScene extends Phaser.Scene {
             button.on(
                 'pointerdown',
                 () => {
-                    this.selection.call = null;
-                    this.selection.groupText = 'Children\'s ';
-                    this.scene.start('ChildrenScene', this.selection);
+                    this.switchDrill(button);
                 }
             );
+            
+        this.currentY += button.height + 20;
+    }
+
+    switchDrill(button) {
+        
+        button.disableInteractive();
+        
+        this.switchDialog =
+            new DialogWarn(
+                this,
+                {
+                    onWarn:
+                        'Are you sure you want to switch to Children\'s Drills?',
+
+                    onConfirm: () => {
+                        this.confirmSwitch(button);
+                    },
+
+                    onCancel: () => {
+                        this.cancelSwitch(button);
+                    }
+                }
+            );
+    }
+
+    confirmSwitch(button) {
+        if (this.switchDialog) {
+            this.switchDialog.destroy();
+            this.switchDialog = null;
+        }
+        
+        this.selection.call = null;
+        this.selection.groupText = 'Children\'s ';
+        this.scene.start('ChildrenScene', this.selection);
+
+        button.setInteractive();
+    }
+
+    cancelSwitch(button) {
+        if (this.switchDialog) {
+            this.switchDialog.destroy();
+            this.switchDialog = null;
+        }
+        
+        button.setInteractive();
     }
 
     createHeader() {
@@ -415,7 +451,7 @@ export default class YouthScene extends Phaser.Scene {
         this.changeColorX = currentX;
         this.changeColorY = buttonY + buttonH;
 
-        this.currentY = currentY + buttonH + 20;
+        this.currentY = currentY + buttonH;
     }
 
     // ==================================================
@@ -423,12 +459,23 @@ export default class YouthScene extends Phaser.Scene {
     // ==================================================
 
     practiceTypeUI() {
-        let currentY = this.currentY;
-    
-        addText(
-            this,
+        const GAP = 40;
+        let currentY = this.currentY + GAP;
+        
+        const spacerY = currentY;
+        // Spacer
+        this.add.rectangle(
+            10,
+            spacerY,
+            this.width - 20,
+            1,
+            0x777777
+        )
+        .setOrigin(0);
+
+        const typeTitle = addText(this,
             20,
-            currentY,
+            currentY + GAP,
             'Practice Type:',
             {
                 fontSize: '36px',
@@ -436,9 +483,15 @@ export default class YouthScene extends Phaser.Scene {
             }
         )
         .setOrigin(0);
+        
+        // Get actual rendered top
+        const bounds = typeTitle.getBounds();
+        
+        // Move it so its ACTUAL top is exactly 40px below spacer
+        typeTitle.y += (spacerY + 40) - bounds.top;
     
-        currentY += 40 + 20;
-    
+        currentY += typeTitle.height + GAP + 20;
+  
         const buttonW =
             this.width / 2 - 30;
     

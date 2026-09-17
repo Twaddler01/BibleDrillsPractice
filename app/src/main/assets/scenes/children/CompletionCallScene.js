@@ -21,15 +21,6 @@ export default class CompletionCallScene extends Phaser.Scene {
         this.width = this.scale.width;
         this.height = this.scale.height;
     
-        this.add.rectangle(
-            0,
-            0,
-            this.width,
-            this.height,
-            0x111111
-        )
-        .setOrigin(0);
-    
         this.drillLayout =
             new DrillLayout(
                 this,

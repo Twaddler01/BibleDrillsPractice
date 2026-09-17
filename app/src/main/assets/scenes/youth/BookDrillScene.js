@@ -22,15 +22,6 @@ export default class BookDrillScene extends Phaser.Scene {
     
         this.width = this.scale.width;
         this.height = this.scale.height;
-    
-        this.add.rectangle(
-            0,
-            0,
-            this.width,
-            this.height,
-            0x111111
-        )
-        .setOrigin(0);
         
         const drillData = this.bookData();
     
