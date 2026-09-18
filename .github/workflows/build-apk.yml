@@ -110,7 +110,14 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+          echo "$KEYSTORE_BASE64" | base64 --decode > app/release.keystore
+    
+          if [ ! -s app/release.keystore ]; then
+            echo "ERROR: app/release.keystore was not created."
+            exit 1
+          fi
+    
+          echo "Release keystore created successfully."
 
       - name: Build release APK
         if: ${{ github.ref_type == 'tag' }}
