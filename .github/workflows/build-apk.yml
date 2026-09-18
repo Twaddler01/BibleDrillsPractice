@@ -2,6 +2,10 @@ name: Build APK
 
 on:
   push:
+    branches:
+      - main
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -20,12 +24,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-    
+
       - name: Set up Android SDK
         run: |
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-    
+
       - name: Install Android SDK packages
         run: |
           sdkmanager "platforms;android-35" "build-tools;35.0.0"
@@ -35,15 +39,26 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Build debug APK
-        run: gradle assembleDebug --no-daemon
+      # ---------------------------------------------------------
+      # DEBUG BUILD
+      # ---------------------------------------------------------
 
-      - name: Rename APK
+      - name: Build debug APK
+        if: ${{ github.ref_type == 'branch' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          gradle assembleDebug \
+            -PVERSION_CODE=${{ github.run_number }} \
+            -PVERSION_NAME=debug \
+            --no-daemon
+
+      - name: Rename debug APK
+        if: ${{ github.ref_type == 'branch' || github.event_name == 'workflow_dispatch' }}
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk \
              app/build/outputs/apk/debug/BibleDrillsPractice-debug.apk
 
-      - name: Upload APK artifact
+      - name: Upload debug APK artifact
+        if: ${{ github.ref_type == 'branch' || github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-artifact@v4
         with:
           name: BibleDrillsPractice-WebView-debug
@@ -51,6 +66,7 @@ jobs:
           if-no-files-found: error
 
       - name: Update Debug Release
+        if: ${{ github.ref_type == 'branch' || github.event_name == 'workflow_dispatch' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -65,4 +81,67 @@ jobs:
               --title "Debug Build" \
               --notes "Latest automatically generated debug APK." \
               --prerelease
+          fi
+
+      # ---------------------------------------------------------
+      # RELEASE BUILD
+      # ---------------------------------------------------------
+
+      - name: Set release version
+        if: ${{ github.ref_type == 'tag' }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+          echo "Release version: $VERSION"
+          echo "Version code: $GITHUB_RUN_NUMBER"
+
+      - name: Disable JavaScript debug mode
+        if: ${{ github.ref_type == 'tag' }}
+        run: |
+          sed -i 's/export const DEBUG = true;/export const DEBUG = false;/' config.js
+
+          echo "DEBUG setting:"
+          grep "export const DEBUG" config.js
+
+      - name: Build release APK
+        if: ${{ github.ref_type == 'tag' }}
+        run: |
+          gradle assembleRelease \
+            -PVERSION_CODE=${{ github.run_number }} \
+            -PVERSION_NAME="$VERSION" \
+            --no-daemon
+
+      - name: Rename release APK
+        if: ${{ github.ref_type == 'tag' }}
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk \
+             app/build/outputs/apk/release/BibleDrillsPractice-${VERSION}.apk
+
+      - name: Upload release APK artifact
+        if: ${{ github.ref_type == 'tag' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: BibleDrillsPractice-${{ env.VERSION }}
+          path: app/build/outputs/apk/release/BibleDrillsPractice-${{ env.VERSION }}.apk
+          if-no-files-found: error
+
+      - name: Attach APK to GitHub Release
+        if: ${{ github.ref_type == 'tag' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          APK="app/build/outputs/apk/release/BibleDrillsPractice-${VERSION}.apk"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "GitHub Release $TAG already exists."
+            gh release upload "$TAG" "$APK" --clobber
+          else
+            echo "GitHub Release $TAG does not exist. Creating it."
+
+            gh release create "$TAG" "$APK" \
+              --title "Bible Drills Practice ${VERSION}" \
+              --notes "Bible Drills Practice ${VERSION}."
           fi

@@ -3,15 +3,16 @@ plugins {
 }
 
 android {
-    namespace 'com.twaddler.bdp'
+    namespace '...'
     compileSdk 35
 
     defaultConfig {
-        applicationId 'com.twaddler.bdp'
+        applicationId '...'
         minSdk 23
         targetSdk 35
-        versionCode 1
-        versionName '1.0'
+
+        versionCode project.findProperty("VERSION_CODE")?.toInteger() ?: 1
+        versionName project.findProperty("VERSION_NAME") ?: "0.0.0"
     }
 }
 
