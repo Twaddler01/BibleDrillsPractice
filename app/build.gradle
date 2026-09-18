@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace '...'
+    namespace 'com.twaddler.bdp'
     compileSdk 35
 
     defaultConfig {
-        applicationId '...'
+        applicationId 'com.twaddler.bdp'
         minSdk 23
         targetSdk 35
 
