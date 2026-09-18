@@ -103,7 +103,7 @@ jobs:
           sed -i 's/export const DEBUG = true;/export const DEBUG = false;/' assets/config.js
 
           echo "DEBUG setting:"
-          grep "export const DEBUG" config.js
+          grep "export const DEBUG" assets/config.js
 
       - name: Prepare release signing
         if: ${{ github.ref_type == 'tag' }}
