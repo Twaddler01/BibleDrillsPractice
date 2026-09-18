@@ -5,8 +5,10 @@
 - Please consult your local drill leader to confirm verses match your current color cycle and your Bible translation/version.
 
 # Download
-- [**⬇️ Download Latest Beta APK for Android (RECOMMENDED)**](https://github.com/Twaddler01/BibleDrillsPractice/releases/download/beta-latest/BibleDrillsPractice-beta-latest.apk)
-- [**⬇️ Download Latest Debug APK for Android**](https://github.com/Twaddler01/BibleDrillsPractice/releases/download/debug-latest/BibleDrillsPractice-debug.apk)
+
+- [**⬇️ Download Latest Beta APK for Android (RECOMMENDED)**](
+
+- [⬇️ Download Latest Debug APK for Android](https://github.com/Twaddler01/BibleDrillsPractice/releases/download/debug-latest/BibleDrillsPractice-debug.apk)
 
 NOTE:
 - To successfully install the APK, you may need to enable “Install unknown apps” (or the equivalent setting) for the app you are using to open the APK, such as your browser or file manager. Android may display additional security warnings before installation.
