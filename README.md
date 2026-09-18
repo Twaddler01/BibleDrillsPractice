@@ -6,7 +6,7 @@
 
 # Download
 
-- [**⬇️ Download Latest Beta APK for Android (RECOMMENDED)**](
+- [**⬇️ Download Latest Beta APK for Android (RECOMMENDED)**](https://github.com/Twaddler01/BibleDrillsPractice/releases/download/beta-latest/BibleDrillsPractice-beta-latest.apk)
 
 - [⬇️ Download Latest Debug APK for Android](https://github.com/Twaddler01/BibleDrillsPractice/releases/download/debug-latest/BibleDrillsPractice-debug.apk)
 
