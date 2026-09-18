@@ -164,3 +164,29 @@ jobs:
               --title "Bible Drills Practice ${VERSION}" \
               --notes "Bible Drills Practice ${VERSION}."
           fi
+
+      - name: Update Latest Beta Release
+        if: ${{ github.ref_type == 'tag' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="beta-latest"
+          APK="app/build/outputs/apk/release/BibleDrillsPractice-${VERSION}.apk"
+          BETA_APK="app/build/outputs/apk/release/BibleDrillsPractice-beta-latest.apk"
+
+          cp "$APK" "$BETA_APK"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Updating existing beta-latest release."
+
+            gh release delete-asset "$TAG" "BibleDrillsPractice-beta-latest.apk" --yes || true
+
+            gh release upload "$TAG" "$BETA_APK" --clobber
+          else
+            echo "Creating beta-latest release."
+
+            gh release create "$TAG" "$BETA_APK" \
+              --title "Latest Beta" \
+              --notes "Latest beta release of Bible Drills Practice." \
+              --prerelease
+          fi

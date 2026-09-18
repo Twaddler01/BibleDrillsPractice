@@ -5,6 +5,7 @@
 - Please consult your local drill leader to confirm verses match your current color cycle and your Bible translation/version.
 
 # Download
+- [**⬇️ Download Latest Beta APK for Android (RECOMMENDED**](url)
 - [**⬇️ Download Latest Debug APK for Android**](https://github.com/Twaddler01/BibleDrillsPractice/releases/download/debug-latest/BibleDrillsPractice-debug.apk)
 
 NOTE:
