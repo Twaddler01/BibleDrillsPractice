@@ -100,10 +100,10 @@ jobs:
       - name: Disable JavaScript debug mode
         if: ${{ github.ref_type == 'tag' }}
         run: |
-          sed -i 's/export const DEBUG = true;/export const DEBUG = false;/' assets/config.js
+          sed -i 's/export const DEBUG = true;/export const DEBUG = false;/' app/src/main/assets/config.js
 
           echo "DEBUG setting:"
-          grep "export const DEBUG" assets/config.js
+          grep "export const DEBUG" app/src/main/assets/config.js
 
       - name: Prepare release signing
         if: ${{ github.ref_type == 'tag' }}
