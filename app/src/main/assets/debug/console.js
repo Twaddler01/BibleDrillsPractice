@@ -1,68 +1,10 @@
 
-// ==================================================
-// PRODUCTION ERROR CATCHER
-// ==================================================
-
-window.addEventListener('error', event => {
-    showFatalError(
-        'JavaScript Error',
-        event.error?.stack ||
-        `${event.message}\n${event.filename}:${event.lineno}:${event.colno}`
-    );
-});
-
-window.addEventListener('unhandledrejection', event => {
-    const error = event.reason;
-
-    showFatalError(
-        'Unhandled Promise Error',
-        error?.stack || error?.message || String(error)
-    );
-});
-
-function showFatalError(title, message) {
-
-    const consoleLog = document.getElementById('productionErrorLog');
-
-    if (!consoleLog) return;
-
-    consoleLog.innerHTML = `
-        <div style="
-            background:#300;
-            color:#fff;
-            padding:12px;
-            font-family:monospace;
-            white-space:pre-wrap;
-            overflow:auto;
-        ">
-            <strong>⚠ ${escapeHTML(title)}</strong>
-
-            <div style="
-                margin-top:10px;
-                color:#ffaaaa;
-            ">${escapeHTML(message)}</div>
-        </div>
-    `;
-}
-
-function escapeHTML(value) {
-    const div = document.createElement('div');
-    div.textContent = String(value);
-    return div.innerHTML;
-}
-
-import { DEBUG } from '../config.js';
-
 function startConsole() { // CONSOLE START
 
 document.getElementById('consoleLog').innerHTML = `
     <div class="console-header">
 
         <span class="console-title">Console</span>
-
-        <button id="productionErrorLogClear">
-            Clear Error
-        </button>
 
         <button id="consoleClear">
             Clear
@@ -123,14 +65,10 @@ const consoleLog = document.getElementById('consoleLog');
 const consoleToggle = document.getElementById('consoleToggle');
 const consoleRefresh = document.getElementById('consoleRefresh');
 const consoleClear = document.getElementById('consoleClear');
-const productionErrorLogClear = document.getElementById('productionErrorLogClear');
-
-productionErrorLogClear.onclick = () => {
-    document.getElementById('productionErrorLog').innerHTML = '';
-};
 
 consoleClear.onclick = () => {
     document.getElementById('js-console').innerHTML = '';
+    console.groupStack = [];
 };
 
 consoleToggle.onclick = () => {
@@ -208,7 +146,9 @@ document.addEventListener('pointercancel', () => {
 
 // Console activity
 
-let consoleDiv = document.getElementById('js-console');
+let consoleDiv =
+    document.getElementById('js-console');
+console.groupStack = [];
 
 // If the browser doesn't already have a console object, create an empty one
 console = console || {};
@@ -254,68 +194,242 @@ console.error = function() {
 	console.render('error', arguments);
 };
 
+console.group = function() {
+
+    console.createGroup(
+        false,
+        arguments
+    );
+};
+
+console.groupCollapsed = function() {
+
+    console.createGroup(
+        true,
+        arguments
+    );
+};
+
+console.groupEnd = function() {
+
+    if (console.groupStack.length === 0) {
+        return;
+    }
+
+    console.groupStack.pop();
+};
+
+console.createGroup = function(collapsed, items) {
+
+    const renderedItems =
+        [...items].map(item =>
+            console.format(item)
+        );
+
+    const group =
+        document.createElement('div');
+
+    group.className =
+        'group';
+
+    if (collapsed) {
+        group.classList.add('collapsed');
+    }
+
+    const header =
+        document.createElement('div');
+
+    header.className =
+        'group-header';
+
+    const arrow =
+        document.createElement('span');
+
+    arrow.className =
+        'group-arrow';
+
+    arrow.textContent =
+        collapsed ? '▶' : '▼';
+
+    const label =
+        document.createElement('span');
+
+    label.innerHTML =
+        renderedItems.join(' ');
+
+    header.appendChild(arrow);
+    header.appendChild(label);
+
+    const content =
+        document.createElement('div');
+
+    content.className =
+        'group-content';
+
+    group.appendChild(header);
+    group.appendChild(content);
+
+    header.addEventListener(
+        'click',
+        () => {
+
+            const isCollapsed =
+                group.classList.toggle(
+                    'collapsed'
+                );
+
+            arrow.textContent =
+                isCollapsed
+                    ? '▶'
+                    : '▼';
+        }
+    );
+
+    console.appendToCurrentGroup(group);
+
+    console.groupStack.push({
+        group,
+        content
+    });
+};
+
+console.appendToCurrentGroup = function(element) {
+
+    if (console.groupStack.length > 0) {
+
+        const currentGroup =
+            console.groupStack[
+                console.groupStack.length - 1
+            ];
+
+        currentGroup.content.appendChild(
+            element
+        );
+
+        return;
+    }
+
+    consoleDiv.appendChild(element);
+};
+
+console.table = function(data) {
+
+    if (!data || typeof data !== 'object') {
+        console.render('log', [data]);
+        return;
+    }
+
+    const rows = Object.entries(data)
+        .map(([key, value]) => {
+
+            let rendered;
+
+            try {
+                rendered =
+                    typeof value === 'object'
+                        ? JSON.stringify(
+                            value,
+                            null,
+                            2
+                        )
+                        : String(value);
+            } catch {
+                rendered = '[unreadable]';
+            }
+
+            return `
+                <tr>
+                    <td>${htmlEncode(key)}</td>
+                    <td>${htmlEncode(rendered)}</td>
+                </tr>
+            `;
+        })
+        .join('');
+
+    const table =
+        document.createElement('div');
+
+    table.className = 'table';
+
+    table.innerHTML = `
+        <table>
+            <tbody>
+                ${rows}
+            </tbody>
+        </table>
+    `;
+
+    console.appendToCurrentGroup(table);
+};
+
+console.format = function(value) {
+
+    if (value === null) {
+        return 'null';
+    }
+
+    if (value === undefined) {
+        return 'undefined';
+    }
+
+    if (typeof value === 'string') {
+
+        if (value.length > 5000) {
+            return (
+                value
+                    .substring(0, 5000)
+                    .htmlEncode() +
+                '...'
+            );
+        }
+
+        return value.htmlEncode();
+    }
+
+    if (typeof value === 'function') {
+        return value.toString().htmlEncode();
+    }
+
+    if (typeof value === 'object') {
+
+        try {
+
+            const visibleObject =
+                !Array.isArray(value)
+                    ? unhideProperties(value)
+                    : value;
+
+            const result =
+                JSON.stringify(
+                    visibleObject,
+                    null,
+                    2
+                );
+
+            return (
+                result === undefined
+                    ? String(value).htmlEncode()
+                    : result.htmlEncode()
+            );
+
+        } catch (e) {
+
+            return (
+                `[Object: ${e.message}]`
+            ).htmlEncode();
+        }
+    }
+
+    return String(value).htmlEncode();
+};
+
 // Render a new entry to the log
 console.render = function(cssClass, items, prefix) {
 
-    const renderedItems = [...items].map(i => {
-
-        if (i === null) {
-            return 'null';
-        }
-
-        if (i === undefined) {
-            return 'undefined';
-        }
-
-        // Strings
-        if (typeof i === 'string') {
-            if (i.length > 300) {
-                return i.substring(0, 300).htmlEncode() + '...';
-            }
-
-            return i.htmlEncode();
-        }
-
-        // Functions
-        if (typeof i === 'function') {
-            return i.toString().htmlEncode();
-        }
-
-        // Objects / arrays
-        if (typeof i === 'object') {
-
-            try {
-
-                const visibleObject =
-                    !Array.isArray(i)
-                        ? unhideProperties(i)
-                        : i;
-
-                const result =
-                    JSON.stringify(
-                        visibleObject,
-                        null,
-                        2
-                    );
-
-                return (
-                    result === undefined
-                        ? String(i).htmlEncode()
-                        : result.htmlEncode()
-                );
-
-            } catch (e) {
-
-                return (
-                    `[Object: ${e.message}]`
-                ).htmlEncode();
-
-            }
-        }
-
-        // Numbers, booleans, symbols, etc.
-        return String(i).htmlEncode();
-    });
+    const renderedItems =
+        [...items].map(
+            item => console.format(item)
+        );
 
     // ------------------------------------------
     // TIMESTAMP
@@ -339,20 +453,25 @@ console.render = function(cssClass, items, prefix) {
     // ENTRY
     // ------------------------------------------
 
-    const div = document.createElement('div');
-    div.className = cssClass;
-
-    const content = renderedItems.join(' ');
-
+    const div =
+        document.createElement('div');
+    
+    div.className =
+        cssClass;
+    
+    const content =
+        renderedItems.join(' ');
+    
     div.innerHTML =
         logHeader +
-        (prefix
-            ? `<span class="prefix">${prefix.htmlEncode()}</span>\n`
-            : ''
+        (
+            prefix
+                ? `<span class="prefix">${prefix.htmlEncode()}</span>\n`
+                : ''
         ) +
         content;
-
-    consoleDiv.prepend(div);
+    
+    console.appendToCurrentGroup(div);
 };
 
 /**
@@ -444,11 +563,6 @@ function unhideProperties(obj) {
     return result;
 }
 
-// Catch all syntax and runtime errors and log them to our custom console
-window.onerror = function(errorMsg, url, line, col, e, f) {
-	console.render('error', [`${errorMsg} in ${url}, line ${line}, col ${col}.`], 'Javascript Error:');
-};
-
 function htmlEncode(text) { 
 	let d = document.createElement('div'); 
 	d.innerText = text; 
@@ -468,6 +582,4 @@ function range(a,b) {
 
 } // CONSOLE END
 
-if (DEBUG) {
-    startConsole();
-}
+startConsole();

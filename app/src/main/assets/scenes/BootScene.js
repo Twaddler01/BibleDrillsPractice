@@ -1,5 +1,7 @@
 // ./scenes/BootScene.js
 
+import DebugButtons from '../debug/DebugButtons.js';
+
 export default class BootScene extends Phaser.Scene {
 
     constructor() {
@@ -121,5 +123,21 @@ export default class BootScene extends Phaser.Scene {
             }
         )
         .setOrigin(0.5, 0);
+
+
+
+
+        this.debug = new DebugButtons(this);
+
+
+const safebar = this.add.rectangle(
+            0,
+            this.height,
+            this.width,
+            48,
+            0xffffff
+        )
+        .setOrigin(0);
+        
     }
 }

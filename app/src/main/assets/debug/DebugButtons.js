@@ -1,14 +1,9 @@
-import { allCardData } from '../data/stageData.js';
 
 export default class DebugButtons {
 
     constructor(scene) {
         this.scene = scene;
-        this.saveManager = this.scene.registry.get('saveManager');
         
-        this.stageProgress = this.scene.stageProgress;
-        this.objectivesManager = this.scene.objectivesManager;
-
         this.container = this.scene.add.container();
         // Place on top of everything
         this.container.setDepth(1000);
@@ -26,54 +21,70 @@ export default class DebugButtons {
     create() {
         this.addTitle('DEBUG BUTTONS:');
 
-/* BUTTONS
-this.addButton('Clear Save Data', () => {
-    this.saveManager.clear();
-});
-////
-this.addButton('unlock the_void (gather)', () => {
-    this.stageProgress.unlock('the_void');
-});*/
-////
-this.addSelectButton(
-    'UNLOCK ITEMS',
-    this.getUnlockIds(),
-    id => {
-        this.stageProgress.unlock(id);
-    }
-);
-////
-this.addSelectButton(
-    'UNLOCK OBJECTIVES',
-    this.getObjectiveUnlockIds(),
-    id => {
-        this.objectivesManager.unlockObjective(id);
-    }
-);
-////
-this.addButton('SHOW UNLOCKED', () => {
-    const unlocked = this.stageProgress.getAllUnlocked();
-    jp(unlocked);
-});
-////
-this.addButton('Show current savedData', () => {
-    this.saveManager.debug();
-});
-////
-this.addButton('VIEW allCardData', () => {
-    console.log(JSON.stringify(allCardData, null, 2));
-});
-////
-this.addButton('getObjectiveData', () => {
-    jp(this.stageProgress.getObjectiveData());
-});
-////
-this.addButton('gameTimer', () => {
-    const time = this.scene.gameTimer.getRaw();
-    jp(time);
-});
-////
 
+
+
+////
+this.addButton('inspectViewport', () => {
+    function inspectViewport() {
+        console.log('debug');
+        const canvas = document.querySelector("#main canvas");
+    
+        console.log({
+            innerWidth: window.innerWidth,
+            innerHeight: window.innerHeight,
+            clientWidth: document.documentElement.clientWidth,
+            clientHeight: document.documentElement.clientHeight,
+            visualWidth: window.visualViewport?.width,
+            visualHeight: window.visualViewport?.height,
+            devicePixelRatio: window.devicePixelRatio,
+            canvasWidth: canvas?.getBoundingClientRect().width,
+            canvasHeight: canvas?.getBoundingClientRect().height
+        });
+    }
+    
+    window.addEventListener("resize", inspectViewport);
+    window.visualViewport?.addEventListener("resize", inspectViewport);
+    
+    inspectViewport();
+
+
+
+function getSafeAreaInsets() {
+    const probe = document.createElement("div");
+
+    Object.assign(probe.style, {
+        position: "fixed",
+        visibility: "hidden",
+        pointerEvents: "none",
+        paddingTop: "env(safe-area-inset-top, 0px)",
+        paddingRight: "env(safe-area-inset-right, 0px)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingLeft: "env(safe-area-inset-left, 0px)"
+    });
+
+    document.body.appendChild(probe);
+
+    const style = getComputedStyle(probe);
+
+    const insets = {
+        top: parseFloat(style.paddingTop),
+        right: parseFloat(style.paddingRight),
+        bottom: parseFloat(style.paddingBottom),
+        left: parseFloat(style.paddingLeft)
+    };
+
+    probe.remove();
+
+    return insets;
+}
+
+console.log("Safe-area insets:", getSafeAreaInsets());
+
+
+
+    
+});
 ////
 
     }
@@ -200,109 +211,6 @@ this.addButton('gameTimer', () => {
         this.container.add(container);
 
         this.y += this.buttonHeight + this.spacing;
-    }
-
-    // DEBUG BUTTON HELPERS
-    getUnlockIds() {
-        let cards = 
-            this.stageProgress.getAllCardIds();
-
-        cards = cards.map(item => ({
-                id: item.id,
-                title: item.title,
-                tab: item.tab
-            })).filter(item => item.tab !== 'discover');
-        
-        return cards;
-    }
-
-    getObjectiveUnlockIds() {
-        let cards = 
-            this.objectivesManager.getAllObjectives();
-
-        cards = cards.map(item => ({
-                id: item.id,
-                title: item.title,
-            }));
-        
-        return cards;
-    }
-
-    addSelectButton(label, options, onSelect) {
-        const button = this.addButton(label, () => {
-            this.showSelect(
-                options,
-                onSelect
-            );
-        });
-    
-        return button;
-    }
-
-    showSelect(options, onSelect) {
-        // Don't create another selector
-        if (this.activeSelect) {
-            this.closeSelect();
-            return;
-        }
-    
-        const container = this.scene.add.container(
-            20,
-            300
-        );
-    
-        this.activeSelect = container;
-        this.activeSelect.setDepth(99999);
-        this.scene.children.bringToTop(this.activeSelect);
-
-        options.forEach((option, index) => {
-    
-            const rows = 21;
-            const column = Math.floor(index / rows);
-            const row = index % rows;
-        
-            const x = column * 305;
-            const y = row * 45;
-
-            const background =
-                this.scene.add.rectangle(
-                    x,
-                    y,
-                    300,
-                    40,
-                    0x222222
-                )
-                .setOrigin(0)
-                .setInteractive();
-    
-            const text =
-                this.scene.add.text(
-                    x + 10,
-                    y + 10,
-                    option.title,
-                    {
-                        fontSize: '18px',
-                        color: '#ffffff'
-                    }
-                );
-    
-            background.on('pointerdown', () => {
-    
-                onSelect(option.id);
-    
-                this.closeSelect();
-            });
-    
-            container.add([
-                background,
-                text
-            ]);
-        });
-    }
-
-    closeSelect() {
-        this.activeSelect?.destroy();
-        this.activeSelect = null;
     }
 
 }
