@@ -3,6 +3,7 @@ export default class DebugButtons {
 
     constructor(scene) {
         this.scene = scene;
+        this.game = scene.game;
         
         this.container = this.scene.add.container();
         // Place on top of everything
@@ -26,64 +27,74 @@ export default class DebugButtons {
 
 ////
 this.addButton('inspectViewport', () => {
-    function inspectViewport() {
-        console.log('debug');
-        const canvas = document.querySelector("#main canvas");
-    
-        console.log({
+    const inspectViewport = () => {
+        const canvas = this.game.canvas;
+        const rect = canvas?.getBoundingClientRect();
+        const gameSize = this.game.scale.gameSize;
+
+        console.log('Viewport diagnostics');
+
+        console.table({
             innerWidth: window.innerWidth,
             innerHeight: window.innerHeight,
+
             clientWidth: document.documentElement.clientWidth,
             clientHeight: document.documentElement.clientHeight,
-            visualWidth: window.visualViewport?.width,
-            visualHeight: window.visualViewport?.height,
+
+            visualWidth: window.visualViewport?.width ?? null,
+            visualHeight: window.visualViewport?.height ?? null,
+
             devicePixelRatio: window.devicePixelRatio,
-            canvasWidth: canvas?.getBoundingClientRect().width,
-            canvasHeight: canvas?.getBoundingClientRect().height
+
+            gameWidth: gameSize.width,
+            gameHeight: gameSize.height,
+
+            canvasLeft: rect?.left ?? null,
+            canvasTop: rect?.top ?? null,
+            canvasWidth: rect?.width ?? null,
+            canvasHeight: rect?.height ?? null,
+            canvasRight: rect?.right ?? null,
+            canvasBottom: rect?.bottom ?? null
         });
-    }
-    
-    window.addEventListener("resize", inspectViewport);
-    window.visualViewport?.addEventListener("resize", inspectViewport);
-    
-    inspectViewport();
-
-
-
-function getSafeAreaInsets() {
-    const probe = document.createElement("div");
-
-    Object.assign(probe.style, {
-        position: "fixed",
-        visibility: "hidden",
-        pointerEvents: "none",
-        paddingTop: "env(safe-area-inset-top, 0px)",
-        paddingRight: "env(safe-area-inset-right, 0px)",
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        paddingLeft: "env(safe-area-inset-left, 0px)"
-    });
-
-    document.body.appendChild(probe);
-
-    const style = getComputedStyle(probe);
-
-    const insets = {
-        top: parseFloat(style.paddingTop),
-        right: parseFloat(style.paddingRight),
-        bottom: parseFloat(style.paddingBottom),
-        left: parseFloat(style.paddingLeft)
     };
 
-    probe.remove();
+    inspectViewport();
 
-    return insets;
-}
+    window.addEventListener('resize', inspectViewport);
+    window.visualViewport?.addEventListener(
+        'resize',
+        inspectViewport
+    );
 
-console.log("Safe-area insets:", getSafeAreaInsets());
-
-
-
+    console.log('Safe-area insets:', getSafeAreaInsets());
     
+    function getSafeAreaInsets() {
+        const probe = document.createElement('div');
+
+        Object.assign(probe.style, {
+            position: 'fixed',
+            visibility: 'hidden',
+            pointerEvents: 'none',
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingRight: 'env(safe-area-inset-right, 0px)',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+            paddingLeft: 'env(safe-area-inset-left, 0px)'
+        });
+
+        document.body.appendChild(probe);
+
+        const style = getComputedStyle(probe);
+
+        const insets = {
+            top: parseFloat(style.paddingTop),
+            right: parseFloat(style.paddingRight),
+            bottom: parseFloat(style.paddingBottom),
+            left: parseFloat(style.paddingLeft)
+        };
+
+        probe.remove();
+        return insets;
+    }
 });
 ////
 
